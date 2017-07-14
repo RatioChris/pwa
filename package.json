@@ -11,6 +11,7 @@
     "lint-fix": "standard --fix"
   },
   "dependencies": {
+    "bows": "^1.7.0",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "react-scripts": "1.0.10"
