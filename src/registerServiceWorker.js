@@ -25,7 +25,8 @@ const isLocalhost = Boolean(
 
 export default function register () {
   log('register')
-  if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
+  // if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
+  if ('serviceWorker' in navigator) {
     // The URL constructor is available in all browsers that support SW.
     const publicUrl = new URL(process.env.PUBLIC_URL, window.location)
     if (publicUrl.origin !== window.location.origin) {
@@ -63,12 +64,12 @@ function registerValidSW (swUrl) {
               // the fresh content will have been added to the cache.
               // It's the perfect time to display a "New content is
               // available; please refresh." message in your web app.
-              console.log('New content is available; please refresh.')
+              log('New content is available; please refresh.')
             } else {
               // At this point, everything has been precached.
               // It's the perfect time to display a
               // "Content is cached for offline use." message.
-              console.log('Content is cached for offline use.')
+              log('Content is cached for offline use.')
             }
           }
         }
@@ -101,9 +102,7 @@ function checkValidServiceWorker (swUrl) {
       }
     })
     .catch(() => {
-      console.log(
-        'No internet connection found. App is running in offline mode.'
-      )
+      log('No internet connection found. App is running in offline mode.')
     })
 }
 

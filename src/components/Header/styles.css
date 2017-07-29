@@ -1,0 +1,31 @@
+@import '../../_styles/_variables.css';
+@import '../../_styles/_extends.css';
+
+.header {
+  display: flex;
+  align-items: center;
+  padding: calc(var(--gutter-width) * 1.75) 0;
+  font-size: 3.6rem;
+}
+
+.logo {
+  flex: 0 0 auto;
+  background: url('../../assets/img/logo.svg') no-repeat 50%/cover;
+  width: 76px;
+  height: 53px;
+  margin-right: calc(var(--gutter-width) * 1.25);
+}
+
+.title {
+  @apply --page-title;
+  line-height: 1;
+}
+
+.nav {
+  flex: 1 1 auto;
+  @apply --list-row;
+
+  li {
+    margin-right: var(--gutter-width);
+  }
+}
