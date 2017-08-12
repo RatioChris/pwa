@@ -16,7 +16,8 @@
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "react-scripts": "1.0.10",
-    "tone": "^0.10.0"
+    "tone": "^0.10.0",
+    "underscore": "^1.8.3"
   },
   "devDependencies": {
     "standard": "^10.0.2"

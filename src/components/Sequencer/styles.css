@@ -1,3 +1,15 @@
 #sequencer {
-  margin: 50px 0;
+  transform: rotateX(180deg);
+}
+
+#sequencer span:nth-child(4n) {
+  border-right: 1px solid #ccc;
+}
+
+#sequencer span:nth-child(16n) {
+  border-right: 1px solid #666;
+}
+
+#sequencer span:nth-child(32n) {
+  border-right: 0;
 }
