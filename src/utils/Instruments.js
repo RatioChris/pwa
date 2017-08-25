@@ -19,11 +19,12 @@ export default class Instruments {
     return _setNotes(qty)
   }
 
-  getNote (index) {
-    return notes[index]
-  }
-  getTime (index) {
-    return beats[index]
+  getNoteFromMatrix (obj) {
+    return {
+      time: beats[obj.column],
+      note: notes[obj.row],
+      inst: obj.inst
+    }
   }
 
   /**
@@ -67,20 +68,24 @@ const _setBeats = (measures, beatsPerMeasure) => {
 /**
  * Effects
  */
-const autoFilter = new Tone.AutoFilter({
+/* const autoFilter = new Tone.AutoFilter({
   frequency: '1',
   wet: 1,
   depth: 0.75
-})
+}) */
 
 const autoWah = new Tone.AutoWah({
   baseFrequency: 120,
-  octaves: 1,
-  Q: 1,
-  gain: 30
+  octaves: 0,
+  Q: 0,
+  gain: 20
 })
 
-const chorus = new Tone.Chorus()
+// const chorus = new Tone.Chorus()
+
+/* const convolver = new Tone.Convolver({
+  url: './samples/ir.wav'
+}) */
 
 const delay = new Tone.PingPongDelay({
   delayTime: 0.25,
@@ -94,7 +99,7 @@ const distortion = new Tone.Distortion({
   wet: 1
 })
 
-const phaser = new Tone.Phaser({
+/* const phaser = new Tone.Phaser({
   frequency: 0.5,
   octaves: 3,
   baseFrequency: 3000
@@ -104,16 +109,16 @@ const pitch = new Tone.PitchShift({
   pitch: 0,
   windowSize: 0.5,
   wet: 1
-})
+}) */
 
 const reverb = new Tone.Freeverb({
   roomSize: 0.8,
   dampening: 6000
 })
 
-const portamento = new Tone.Monophonic({
+/* const portamento = new Tone.Monophonic({
   portamento: 0.25
-})
+}) */
 
 const lowPass = new Tone.Filter({
   frequency: 14000
@@ -123,7 +128,7 @@ const lowPass = new Tone.Filter({
  * Synth
  */
 const synth = () => {
-  let inst = new Tone.PolySynth(12, Tone.MonoSynth).chain(delay, reverb, lowPass)
+  let inst = new Tone.PolySynth(6, Tone.MonoSynth).chain(lowPass)
   inst.set({
     oscillator: {
       type: 'square'
@@ -141,7 +146,7 @@ const synth = () => {
  * Guitar
  */
 const guitar = () => {
-  let inst = new Tone.PolySynth(12, Tone.MonoSynth).chain(delay, distortion, reverb, lowPass)
+  let inst = new Tone.PolySynth(6, Tone.MonoSynth).chain(delay, distortion, reverb, lowPass)
   inst.set({
     oscillator: {
       type: 'square'
@@ -159,16 +164,16 @@ const guitar = () => {
  * Bass
  */
 const bass = () => {
-  let inst = new Tone.PolySynth(12, Tone.MonoSynth).chain(autoWah, lowPass)
+  let inst = new Tone.PolySynth(6, Tone.MonoSynth).chain(autoWah, lowPass)
   inst.set({
     oscillator: {
       type: 'square'
     },
     envelope: {
-      attack: 0.001,
-      decay: 0.1,
-      sustain: 0.9,
-      release: 2
+      attack: 0.01,
+      decay: 0.01,
+      sustain: 3,
+      release: 3
     }
   })
 

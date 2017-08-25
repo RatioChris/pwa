@@ -13,3 +13,7 @@
 #sequencer span:nth-child(32n) {
   border-right: 0;
 }
+
+.controls {
+  margin: 10px;
+}

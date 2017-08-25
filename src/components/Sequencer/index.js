@@ -4,6 +4,11 @@ import _ from 'underscore'
 import './styles.css'
 import Instruments from '../../utils/Instruments'
 
+import Button from 'material-ui/Button'
+import PlayIcon from 'material-ui-icons/PlayArrow'
+import PauseIcon from 'material-ui-icons/Pause'
+import Radio from 'material-ui/Radio'
+
 let sequencer
 let measures = 8
 let beatsPerMeasure = 4
@@ -16,21 +21,29 @@ class Sequencer extends Component {
   constructor (props) {
     super(props)
 
+    this.state = {
+      paused: false,
+      inst: 'guitar'
+    }
+
     // this.arrMatrix = [{'row': 0, 'column': 0}, {'row': 3, 'column': 2}, {'row': 5, 'column': 4}, {'row': 0, 'column': 7}, {'row': 0, 'column': 16}, {'row': 3, 'column': 18}, {'row': 5, 'column': 20}, {'row': 3, 'column': 9}, {'row': 6, 'column': 11}, {'row': 5, 'column': 12}, {'row': 3, 'column': 23}, {'row': 0, 'column': 25}]
-    this.arrMatrix = [{'row': 0, 'column': 0}, {'row': 3, 'column': 2}, {'row': 5, 'column': 4}, {'row': 0, 'column': 7}, {'row': 0, 'column': 16}, {'row': 3, 'column': 18}, {'row': 5, 'column': 20}, {'row': 3, 'column': 9}, {'row': 6, 'column': 11}, {'row': 5, 'column': 12}, {'row': 3, 'column': 23}, {'row': 0, 'column': 25}, {'row': 7, 'column': 0}, {'row': 10, 'column': 2}, {'row': 12, 'column': 4}, {'row': 7, 'column': 7}, {'row': 10, 'column': 9}, {'row': 13, 'column': 11}, {'row': 12, 'column': 12}, {'row': 10, 'column': 18}, {'row': 12, 'column': 20}, {'row': 7, 'column': 16}, {'row': 10, 'column': 23}, {'row': 7, 'column': 25}, {'row': 0, 'column': 2}, {'row': 0, 'column': 4}, {'row': 0, 'column': 6}, {'row': 0, 'column': 18}, {'row': 0, 'column': 20}, {'row': 0, 'column': 8}, {'row': 0, 'column': 10}, {'row': 0, 'column': 12}, {'row': 0, 'column': 14}, {'row': 0, 'column': 30}, {'row': 0, 'column': 28}, {'row': 0, 'column': 26}, {'row': 0, 'column': 24}, {'row': 0, 'column': 22}]
-    this.arrGuitar = [{'row': 0, 'column': 0}, {'row': 3, 'column': 2}, {'row': 5, 'column': 4}, {'row': 0, 'column': 7}, {'row': 0, 'column': 16}, {'row': 3, 'column': 18}, {'row': 5, 'column': 20}, {'row': 3, 'column': 9}, {'row': 6, 'column': 11}, {'row': 5, 'column': 12}, {'row': 3, 'column': 23}, {'row': 0, 'column': 25}, {'row': 7, 'column': 0}, {'row': 10, 'column': 2}, {'row': 12, 'column': 4}, {'row': 7, 'column': 7}, {'row': 10, 'column': 9}, {'row': 13, 'column': 11}, {'row': 12, 'column': 12}, {'row': 10, 'column': 18}, {'row': 12, 'column': 20}, {'row': 7, 'column': 16}, {'row': 10, 'column': 23}, {'row': 7, 'column': 25}]
-    this.arrBass = [{'row': 0, 'column': 0}, {'row': 0, 'column': 16}, {'row': 0, 'column': 2}, {'row': 0, 'column': 4}, {'row': 0, 'column': 6}, {'row': 0, 'column': 18}, {'row': 0, 'column': 20}, {'row': 0, 'column': 8}, {'row': 0, 'column': 10}, {'row': 0, 'column': 12}, {'row': 0, 'column': 14}, {'row': 0, 'column': 30}, {'row': 0, 'column': 28}, {'row': 0, 'column': 26}, {'row': 0, 'column': 24}, {'row': 0, 'column': 22}]
-    this.arrNotes = []
-    this.matrix = []
+    // this.arrMatrix = [{'row': 0, 'column': 0}, {'row': 3, 'column': 2}, {'row': 5, 'column': 4}, {'row': 0, 'column': 7}, {'row': 0, 'column': 16}, {'row': 3, 'column': 18}, {'row': 5, 'column': 20}, {'row': 3, 'column': 9}, {'row': 6, 'column': 11}, {'row': 5, 'column': 12}, {'row': 3, 'column': 23}, {'row': 0, 'column': 25}, {'row': 7, 'column': 0}, {'row': 10, 'column': 2}, {'row': 12, 'column': 4}, {'row': 7, 'column': 7}, {'row': 10, 'column': 9}, {'row': 13, 'column': 11}, {'row': 12, 'column': 12}, {'row': 10, 'column': 18}, {'row': 12, 'column': 20}, {'row': 7, 'column': 16}, {'row': 10, 'column': 23}, {'row': 7, 'column': 25}, {'row': 0, 'column': 2}, {'row': 0, 'column': 4}, {'row': 0, 'column': 6}, {'row': 0, 'column': 18}, {'row': 0, 'column': 20}, {'row': 0, 'column': 8}, {'row': 0, 'column': 10}, {'row': 0, 'column': 12}, {'row': 0, 'column': 14}, {'row': 0, 'column': 30}, {'row': 0, 'column': 28}, {'row': 0, 'column': 26}, {'row': 0, 'column': 24}, {'row': 0, 'column': 22}]
+    this.arrGuitar = [{'row': 0, 'column': 0, 'inst': 'guitar'}, {'row': 7, 'column': 0, 'inst': 'guitar'}, {'row': 3, 'column': 2, 'inst': 'guitar'}, {'row': 10, 'column': 2, 'inst': 'guitar'}, {'row': 5, 'column': 4, 'inst': 'guitar'}, {'row': 12, 'column': 4, 'inst': 'guitar'}, {'row': 0, 'column': 7, 'inst': 'guitar'}, {'row': 7, 'column': 7, 'inst': 'guitar'}, {'row': 3, 'column': 9, 'inst': 'guitar'}, {'row': 10, 'column': 9, 'inst': 'guitar'}, {'row': 6, 'column': 11, 'inst': 'guitar'}, {'row': 13, 'column': 11, 'inst': 'guitar'}, {'row': 5, 'column': 12, 'inst': 'guitar'}, {'row': 12, 'column': 12, 'inst': 'guitar'}, {'row': 0, 'column': 16, 'inst': 'guitar'}, {'row': 7, 'column': 16, 'inst': 'guitar'}, {'row': 3, 'column': 18, 'inst': 'guitar'}, {'row': 10, 'column': 18, 'inst': 'guitar'}, {'row': 5, 'column': 20, 'inst': 'guitar'}, {'row': 12, 'column': 20, 'inst': 'guitar'}, {'row': 3, 'column': 23, 'inst': 'guitar'}, {'row': 10, 'column': 23, 'inst': 'guitar'}, {'row': 0, 'column': 25, 'inst': 'guitar'}, {'row': 7, 'column': 25, 'inst': 'guitar'}]
+    this.arrBass = [{'row': 0, 'column': 0, 'inst': 'bass'}, {'row': 0, 'column': 2, 'inst': 'bass'}, {'row': 0, 'column': 4, 'inst': 'bass'}, {'row': 0, 'column': 6, 'inst': 'bass'}, {'row': 0, 'column': 8, 'inst': 'bass'}, {'row': 0, 'column': 10, 'inst': 'bass'}, {'row': 0, 'column': 12, 'inst': 'bass'}, {'row': 0, 'column': 14, 'inst': 'bass'}, {'row': 0, 'column': 16, 'inst': 'bass'}, {'row': 0, 'column': 18, 'inst': 'bass'}, {'row': 0, 'column': 20, 'inst': 'bass'}, {'row': 0, 'column': 22, 'inst': 'bass'}, {'row': 0, 'column': 24, 'inst': 'bass'}, {'row': 0, 'column': 26, 'inst': 'bass'}, {'row': 0, 'column': 28, 'inst': 'bass'}, {'row': 0, 'column': 30, 'inst': 'bass'}]
+    this.arrMatrix = this.arrGuitar.concat(this.arrBass)
+
+    this.onTogglePlay = this.onTogglePlay.bind(this)
+    this.onSelectInstrument = this.onSelectInstrument.bind(this)
   }
 
   componentDidMount () {
-    this.initTone()
-    this.initNexus()
-    this.setNotesFromMatrix()
     bass = instruments.getBass()
     guitar = instruments.getGuitar()
-    synth = instruments.getGuitar()
+    synth = instruments.getSynth()
+
+    this.initTone()
+    this.initNexus()
+    this.initTransport()
   }
 
   throttle (type, name) {
@@ -50,22 +63,7 @@ class Sequencer extends Component {
     Tone.Transport.bpm.value = 240
     Tone.Transport.loopEnd = `${measures}m`
     Tone.Transport.loop = true
-    Tone.Transport.start(3)
-
-    /* const part = new Tone.Part(function (time, value) {
-      synth.triggerAttackRelease(value.note, `${measures * beatsPerMeasure}n`, time)
-    }, this.arrNotes)
-    part.start(0) */
-
-    Tone.Transport.scheduleRepeat((time) => {
-      console.log(`initTone ${measures}m`, time)
-      this.arrNotes.forEach((i) => {
-        // console.log(i)
-        Tone.Transport.scheduleOnce(() => {
-          synth.triggerAttackRelease(i.note, `${measures * beatsPerMeasure}n`)
-        }, i.time)
-      })
-    }, `${measures}m`)
+    Tone.Transport.start(4)
   }
 
   initNexus () {
@@ -75,13 +73,60 @@ class Sequencer extends Component {
       'rows': 14,
       'columns': measures * beatsPerMeasure
     })
-    this.arrMatrix.forEach((i) => {
-      sequencer.matrix.set.cell(i.column, i.row, 1)
+    this.renderMatrix()
+
+    sequencer.on('change', (obj) => {
+      this.updateSynth(obj)
     })
 
-    sequencer.on('change', (v) => {
-      this.updateSynth(v)
+    this.throttle('resize', 'optimizedResize')
+    window.addEventListener('optimizedResize', () => {
+      sequencer.resize(window.innerWidth, 300)
+      // console.warn(JSON.stringify(sequencer.matrix.pattern))
+      // sequencer.matrix.set.all(this.matrix)
+
+      this.renderMatrix()
     })
+  }
+
+  renderMatrix () {
+    sequencer.resize(window.innerWidth, 300)
+    this.arrMatrix.forEach((i) => {
+      console.log(i.inst, this.state.inst)
+      if (i.inst === this.state.inst) sequencer.matrix.set.cell(i.column, i.row, 1)
+    })
+  }
+
+  initTransport () {
+    Tone.Transport.scheduleRepeat((time) => {
+      this.arrMatrix.forEach((i) => {
+        let tone = instruments.getNoteFromMatrix(i)
+        // console.log(i, tone)
+        Tone.Transport.scheduleOnce(() => {
+          // synth.triggerAttackRelease(tone.note, `${measures * beatsPerMeasure}n`)
+          // const inst = {} // JSON.parse(tone.inst)
+          // const inst = eval(tone.inst)
+
+          switch (tone.inst) {
+            case 'guitar':
+              guitar.triggerAttackRelease(tone.note, `${measures * beatsPerMeasure}n`)
+              // sequencer.colorize('accent', '#f00')
+              break
+            case 'bass':
+              bass.triggerAttackRelease(tone.note, `${measures * beatsPerMeasure}n`)
+              // sequencer.colorize('accent', '#0f0')
+              break
+            default:
+              synth.triggerAttackRelease(tone.note, `${measures * beatsPerMeasure}n`)
+              // sequencer.colorize('accent', '#00f')
+              break
+          }
+
+          // console.log(inst, tone.note, `${measures * beatsPerMeasure}n`)
+          // if (typeof inst === 'object') inst.triggerAttackRelease(tone.note, `${measures * beatsPerMeasure}n`)
+        }, tone.time)
+      })
+    }, `${measures}m`)
 
     Tone.Transport.scheduleRepeat((time) => {
       Tone.Draw.schedule(() => {
@@ -89,61 +134,25 @@ class Sequencer extends Component {
         sequencer.next()
       }, time)
     }, `${beatsPerMeasure}n`)
-
-    this.throttle('resize', 'optimizedResize')
-    window.addEventListener('optimizedResize', () => {
-      sequencer.resize(window.innerWidth, 300)
-      // console.warn(JSON.stringify(sequencer.matrix.pattern))
-      // console.warn(JSON.stringify(this.matrix))
-      // sequencer.matrix.set.all(this.matrix)
-
-      this.arrMatrix.forEach((i) => {
-        sequencer.matrix.set.cell(i.column, i.row, 1)
-      })
-    })
   }
 
-  setNotesFromMatrix () {
-    this.arrMatrix.forEach((i) => {
-      let beat = {
-        time: instruments.getTime(i.column),
-        note: instruments.getNote(i.row)
-      }
-      this.arrNotes.push(beat)
-    })
-  }
-
-  updateSynth (v) {
-    console.warn('updateSynth')
-    console.log(v)
-    const state = v.state
-    delete v.state
-    this.matrix = sequencer.matrix.pattern
-
-    let beat = {
-      time: instruments.getTime(v.column),
-      note: instruments.getNote(v.row)
-    }
+  updateSynth (obj) {
+    const state = obj.state
+    delete obj.state
+    obj['inst'] = this.state.inst
 
     if (state) {
-      if (_.find(this.arrMatrix, v) === undefined) {
-        this.arrMatrix.push(v)
-        this.arrNotes.push(beat)
+      if (_.find(this.arrMatrix, obj) === undefined) {
+        this.arrMatrix.push(obj)
       }
     } else {
       let arrMatrix = this.arrMatrix
-      let arrNotes = this.arrNotes
       this.arrMatrix = arrMatrix.filter((i) => {
-        // console.warn(i, v, JSON.stringify(i) !== JSON.stringify(v))
-        return JSON.stringify(i) !== JSON.stringify(v)
-      })
-      this.arrNotes = arrNotes.filter((i) => {
-        // console.warn(i, v, JSON.stringify(i) !== JSON.stringify(beat))
-        return JSON.stringify(i) !== JSON.stringify(beat)
+        // console.warn(i, obj, JSON.stringify(i) !== JSON.stringify(obj))
+        return JSON.stringify(i) !== JSON.stringify(obj)
       })
     }
-    console.log('arrMatrix', this.arrMatrix, JSON.stringify(this.arrMatrix))
-    console.log('arrNotes', this.arrNotes, JSON.stringify(this.arrNotes))
+    // console.log('arrMatrix', this.arrMatrix, JSON.stringify(this.arrMatrix))
 
     /* if (state) {
       Tone.Transport.scheduleOnce(() => {
@@ -154,20 +163,63 @@ class Sequencer extends Component {
         synth.triggerAttackRelease('C0', '8n')
       }, time)
     } */
+  }
 
-    /* let part = new Tone.Part((time, note) => {
-      // synth.triggerAttackRelease(note, '8n', time)
-      console.log(time, note, this.arrNotes[0])
-      Tone.Transport.schedule(() => {
-        synth.triggerAttackRelease(note, '8n')
-      }, time)
-    }, [this.arrNotes])
-    part.start(0) */
+  onTogglePlay () {
+    if (this.state.paused) {
+      this.setState({ paused: false })
+      Tone.Transport.start()
+    } else {
+      this.setState({ paused: true })
+      Tone.Transport.pause()
+    }
+  }
+
+  onSelectInstrument (event) {
+    console.warn(this.state.inst, event.currentTarget.value)
+    this.setState({ inst: event.currentTarget.value })
+    setTimeout(() => {
+      this.renderMatrix()
+    }, 10)
   }
 
   render () {
+    let icon = null
+    if (this.state.paused) {
+      icon = <PauseIcon />
+    } else {
+      icon = <PlayIcon />
+    }
+
     return (
-      <div id='sequencer' />
+      <section>
+        <div className='controls'>
+          <Button fab color='primary' onClick={this.onTogglePlay}>
+            {icon}
+          </Button>
+
+          <Radio
+            checked={this.state.inst === 'guitar'}
+            onChange={this.onSelectInstrument}
+            value='guitar'
+            name='instrument'
+          />
+          <Radio
+            checked={this.state.inst === 'bass'}
+            onChange={this.onSelectInstrument}
+            value='bass'
+            name='instrument'
+          />
+          <Radio
+            checked={this.state.inst === 'synth'}
+            onChange={this.onSelectInstrument}
+            value='synth'
+            name='instrument'
+          />
+        </div>
+
+        <div id='sequencer' />
+      </section>
     )
   }
 }
