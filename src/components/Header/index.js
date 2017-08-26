@@ -9,7 +9,7 @@ function SimpleAppBar (props) {
       <AppBar position='static' color='default'>
         <Toolbar>
           <Typography type='title' color='inherit'>
-            Title
+            PWA
           </Typography>
         </Toolbar>
       </AppBar>

@@ -2,12 +2,18 @@ import React, { Component } from 'react'
 import Tone from 'tone'
 import _ from 'underscore'
 import './styles.css'
+import firebase from '../../utils/firebase.js'
 import Instruments from '../../utils/Instruments'
 
+import { deepOrange, pink, purple } from 'material-ui/colors'
 import Button from 'material-ui/Button'
 import PlayIcon from 'material-ui-icons/PlayArrow'
 import PauseIcon from 'material-ui-icons/Pause'
 import Radio from 'material-ui/Radio'
+
+const color1 = deepOrange[500]
+const color2 = purple[400]
+const color3 = pink[500]
 
 let sequencer
 let measures = 8
@@ -16,21 +22,24 @@ let instruments = new Instruments(measures, beatsPerMeasure)
 let bass = null
 let guitar = null
 let synth = null
+let kick = null
+let snare = null
+let highHat = null
+let highHatOpen = null
 
 class Sequencer extends Component {
   constructor (props) {
     super(props)
 
-    this.state = {
-      paused: false,
-      inst: 'guitar'
-    }
-
-    // this.arrMatrix = [{'row': 0, 'column': 0}, {'row': 3, 'column': 2}, {'row': 5, 'column': 4}, {'row': 0, 'column': 7}, {'row': 0, 'column': 16}, {'row': 3, 'column': 18}, {'row': 5, 'column': 20}, {'row': 3, 'column': 9}, {'row': 6, 'column': 11}, {'row': 5, 'column': 12}, {'row': 3, 'column': 23}, {'row': 0, 'column': 25}]
-    // this.arrMatrix = [{'row': 0, 'column': 0}, {'row': 3, 'column': 2}, {'row': 5, 'column': 4}, {'row': 0, 'column': 7}, {'row': 0, 'column': 16}, {'row': 3, 'column': 18}, {'row': 5, 'column': 20}, {'row': 3, 'column': 9}, {'row': 6, 'column': 11}, {'row': 5, 'column': 12}, {'row': 3, 'column': 23}, {'row': 0, 'column': 25}, {'row': 7, 'column': 0}, {'row': 10, 'column': 2}, {'row': 12, 'column': 4}, {'row': 7, 'column': 7}, {'row': 10, 'column': 9}, {'row': 13, 'column': 11}, {'row': 12, 'column': 12}, {'row': 10, 'column': 18}, {'row': 12, 'column': 20}, {'row': 7, 'column': 16}, {'row': 10, 'column': 23}, {'row': 7, 'column': 25}, {'row': 0, 'column': 2}, {'row': 0, 'column': 4}, {'row': 0, 'column': 6}, {'row': 0, 'column': 18}, {'row': 0, 'column': 20}, {'row': 0, 'column': 8}, {'row': 0, 'column': 10}, {'row': 0, 'column': 12}, {'row': 0, 'column': 14}, {'row': 0, 'column': 30}, {'row': 0, 'column': 28}, {'row': 0, 'column': 26}, {'row': 0, 'column': 24}, {'row': 0, 'column': 22}]
     this.arrGuitar = [{'row': 0, 'column': 0, 'inst': 'guitar'}, {'row': 7, 'column': 0, 'inst': 'guitar'}, {'row': 3, 'column': 2, 'inst': 'guitar'}, {'row': 10, 'column': 2, 'inst': 'guitar'}, {'row': 5, 'column': 4, 'inst': 'guitar'}, {'row': 12, 'column': 4, 'inst': 'guitar'}, {'row': 0, 'column': 7, 'inst': 'guitar'}, {'row': 7, 'column': 7, 'inst': 'guitar'}, {'row': 3, 'column': 9, 'inst': 'guitar'}, {'row': 10, 'column': 9, 'inst': 'guitar'}, {'row': 6, 'column': 11, 'inst': 'guitar'}, {'row': 13, 'column': 11, 'inst': 'guitar'}, {'row': 5, 'column': 12, 'inst': 'guitar'}, {'row': 12, 'column': 12, 'inst': 'guitar'}, {'row': 0, 'column': 16, 'inst': 'guitar'}, {'row': 7, 'column': 16, 'inst': 'guitar'}, {'row': 3, 'column': 18, 'inst': 'guitar'}, {'row': 10, 'column': 18, 'inst': 'guitar'}, {'row': 5, 'column': 20, 'inst': 'guitar'}, {'row': 12, 'column': 20, 'inst': 'guitar'}, {'row': 3, 'column': 23, 'inst': 'guitar'}, {'row': 10, 'column': 23, 'inst': 'guitar'}, {'row': 0, 'column': 25, 'inst': 'guitar'}, {'row': 7, 'column': 25, 'inst': 'guitar'}]
     this.arrBass = [{'row': 0, 'column': 0, 'inst': 'bass'}, {'row': 0, 'column': 2, 'inst': 'bass'}, {'row': 0, 'column': 4, 'inst': 'bass'}, {'row': 0, 'column': 6, 'inst': 'bass'}, {'row': 0, 'column': 8, 'inst': 'bass'}, {'row': 0, 'column': 10, 'inst': 'bass'}, {'row': 0, 'column': 12, 'inst': 'bass'}, {'row': 0, 'column': 14, 'inst': 'bass'}, {'row': 0, 'column': 16, 'inst': 'bass'}, {'row': 0, 'column': 18, 'inst': 'bass'}, {'row': 0, 'column': 20, 'inst': 'bass'}, {'row': 0, 'column': 22, 'inst': 'bass'}, {'row': 0, 'column': 24, 'inst': 'bass'}, {'row': 0, 'column': 26, 'inst': 'bass'}, {'row': 0, 'column': 28, 'inst': 'bass'}, {'row': 0, 'column': 30, 'inst': 'bass'}]
-    this.arrMatrix = this.arrGuitar.concat(this.arrBass)
+    this.data = this.arrGuitar.concat(this.arrBass)
+
+    this.state = {
+      data: [],
+      instrument: 'guitar',
+      paused: true
+    }
 
     this.onTogglePlay = this.onTogglePlay.bind(this)
     this.onSelectInstrument = this.onSelectInstrument.bind(this)
@@ -40,10 +49,22 @@ class Sequencer extends Component {
     bass = instruments.getBass()
     guitar = instruments.getGuitar()
     synth = instruments.getSynth()
+    kick = instruments.getKick()
+    snare = instruments.getSnare()
+    highHat = instruments.getHighHat()
+    highHatOpen = instruments.getHighHatOpen()
 
     this.initTone()
     this.initNexus()
+    this.initData()
     this.initTransport()
+
+    this.throttle('resize', 'optimizedResize')
+    window.addEventListener('optimizedResize', () => {
+      // console.warn(JSON.stringify(sequencer.matrix.pattern))
+      // sequencer.matrix.set.all(this.matrix)
+      this.renderMatrix()
+    })
   }
 
   throttle (type, name) {
@@ -63,10 +84,11 @@ class Sequencer extends Component {
     Tone.Transport.bpm.value = 240
     Tone.Transport.loopEnd = `${measures}m`
     Tone.Transport.loop = true
-    Tone.Transport.start(4)
+    // Tone.Transport.start(4)
   }
 
   initNexus () {
+    if (sequencer) sequencer.destroy()
     sequencer = new window.Nexus.Sequencer('#sequencer', {
       'size': [window.innerWidth, 300],
       'mode': 'toggle',
@@ -78,91 +100,122 @@ class Sequencer extends Component {
     sequencer.on('change', (obj) => {
       this.updateSynth(obj)
     })
-
-    this.throttle('resize', 'optimizedResize')
-    window.addEventListener('optimizedResize', () => {
-      sequencer.resize(window.innerWidth, 300)
-      // console.warn(JSON.stringify(sequencer.matrix.pattern))
-      // sequencer.matrix.set.all(this.matrix)
-
-      this.renderMatrix()
-    })
   }
 
-  renderMatrix () {
-    sequencer.resize(window.innerWidth, 300)
-    this.arrMatrix.forEach((i) => {
-      console.log(i.inst, this.state.inst)
-      if (i.inst === this.state.inst) sequencer.matrix.set.cell(i.column, i.row, 1)
+  initData () {
+    const sessionRef = firebase.database().ref('sessions')
+
+    sessionRef.on('value', (snapshot) => {
+      const items = snapshot.val()
+      let sessionData = []
+      for (let item in items) {
+        console.log(item, items)
+        sessionData.push({
+          id: item,
+          data: items[item].data
+        })
+      }
+      this.data = sessionData[0].data
+      this.setState({ data: sessionData })
+      this.renderMatrix()
     })
   }
 
   initTransport () {
     Tone.Transport.scheduleRepeat((time) => {
-      this.arrMatrix.forEach((i) => {
+      this.data.forEach((i) => {
         let tone = instruments.getNoteFromMatrix(i)
         // console.log(i, tone)
         Tone.Transport.scheduleOnce(() => {
-          // synth.triggerAttackRelease(tone.note, `${measures * beatsPerMeasure}n`)
-          // const inst = {} // JSON.parse(tone.inst)
-          // const inst = eval(tone.inst)
-
-          switch (tone.inst) {
-            case 'guitar':
-              guitar.triggerAttackRelease(tone.note, `${measures * beatsPerMeasure}n`)
-              // sequencer.colorize('accent', '#f00')
-              break
-            case 'bass':
-              bass.triggerAttackRelease(tone.note, `${measures * beatsPerMeasure}n`)
-              // sequencer.colorize('accent', '#0f0')
-              break
-            default:
-              synth.triggerAttackRelease(tone.note, `${measures * beatsPerMeasure}n`)
-              // sequencer.colorize('accent', '#00f')
-              break
-          }
-
-          // console.log(inst, tone.note, `${measures * beatsPerMeasure}n`)
-          // if (typeof inst === 'object') inst.triggerAttackRelease(tone.note, `${measures * beatsPerMeasure}n`)
+          this.triggerInstrument(i, tone.note)
         }, tone.time)
       })
     }, `${measures}m`)
 
     Tone.Transport.scheduleRepeat((time) => {
       Tone.Draw.schedule(() => {
-        // console.log('Draw', time)
         sequencer.next()
       }, time)
     }, `${beatsPerMeasure}n`)
   }
 
-  updateSynth (obj) {
-    const state = obj.state
-    delete obj.state
-    obj['inst'] = this.state.inst
+  renderMatrix () {
+    let instrument = this.state.instrument
+
+    switch (instrument) {
+      case 'guitar':
+        sequencer.colorize('accent', color1)
+        break
+      case 'bass':
+        sequencer.colorize('accent', color2)
+        break
+      default:
+        sequencer.colorize('accent', color3)
+        break
+    }
+
+    sequencer.resize(window.innerWidth, 300)
+    // sequencer.matrix.populate.all(0)
+    // sequencer.matrix.set.all(this.matrix)
+
+    this.data.forEach((i) => {
+      if (i.inst === instrument) sequencer.matrix.set.cell(i.column, i.row, 1)
+    })
+  }
+
+  updateSynth (i) {
+    console.log(JSON.stringify(i))
+    const state = i.state
+    delete i.state
+    i['inst'] = this.state.instrument
 
     if (state) {
-      if (_.find(this.arrMatrix, obj) === undefined) {
-        this.arrMatrix.push(obj)
+      if (_.find(this.data, i) === undefined) {
+        // sequencer.matrix.set.cell(i.column, i.row, 1)
+        this.data.push(i)
+        let tone = instruments.getNoteFromMatrix(i)
+        this.triggerInstrument(i, tone.note)
+
+        // const itemsRef = firebase.database().ref('sessions')
+        // itemsRef.push(i)
       }
     } else {
-      let arrMatrix = this.arrMatrix
-      this.arrMatrix = arrMatrix.filter((i) => {
-        // console.warn(i, obj, JSON.stringify(i) !== JSON.stringify(obj))
-        return JSON.stringify(i) !== JSON.stringify(obj)
-      })
-    }
-    // console.log('arrMatrix', this.arrMatrix, JSON.stringify(this.arrMatrix))
+      const data = this.data
+      const sortObj = {}
+      Object.keys(i).sort().forEach((key) => { sortObj[key] = i[key] })
 
-    /* if (state) {
-      Tone.Transport.scheduleOnce(() => {
-        synth.triggerAttackRelease(note, '8n')
-      }, time)
-    } else {
-      Tone.Transport.scheduleOnce(() => {
-        synth.triggerAttackRelease('C0', '8n')
-      }, time)
-    } */
+      this.data = data.filter((obj) => {
+        let match = obj.row === i.row && obj.column === i.column && obj.inst === i.inst
+        console.warn(obj, i, match)
+        return !match
+      })
+
+      // const itemRef = firebase.database().ref(`/sessions/${itemId}`)
+      // itemRef.remove()
+    }
+    console.log('updateSynth', JSON.stringify(this.data))
+  }
+
+  triggerInstrument (i, note) {
+    const time = `${measures * beatsPerMeasure}n`
+
+    switch (i.inst) {
+      case 'guitar':
+        guitar.triggerAttackRelease(note, time)
+        break
+      case 'bass':
+        bass.triggerAttackRelease(note, time)
+        break
+      case 'drums':
+        if (i.row === 0) kick.triggerAttackRelease(0, time)
+        if (i.row === 1) snare.triggerAttackRelease(0, time)
+        if (i.row === 2) highHat.triggerAttackRelease(0, time)
+        if (i.row === 3) highHatOpen.triggerAttackRelease(0, time)
+        break
+      default:
+        synth.triggerAttackRelease(0, time)
+        break
+    }
   }
 
   onTogglePlay () {
@@ -176,19 +229,19 @@ class Sequencer extends Component {
   }
 
   onSelectInstrument (event) {
-    console.warn(this.state.inst, event.currentTarget.value)
-    this.setState({ inst: event.currentTarget.value })
+    this.setState({ instrument: event.currentTarget.value })
+
     setTimeout(() => {
-      this.renderMatrix()
-    }, 10)
+      this.initNexus()
+    }, 0)
   }
 
   render () {
     let icon = null
     if (this.state.paused) {
-      icon = <PauseIcon />
-    } else {
       icon = <PlayIcon />
+    } else {
+      icon = <PauseIcon />
     }
 
     return (
@@ -199,21 +252,21 @@ class Sequencer extends Component {
           </Button>
 
           <Radio
-            checked={this.state.inst === 'guitar'}
+            checked={this.state.instrument === 'guitar'}
             onChange={this.onSelectInstrument}
             value='guitar'
             name='instrument'
           />
           <Radio
-            checked={this.state.inst === 'bass'}
+            checked={this.state.instrument === 'bass'}
             onChange={this.onSelectInstrument}
             value='bass'
             name='instrument'
           />
           <Radio
-            checked={this.state.inst === 'synth'}
+            checked={this.state.instrument === 'drums'}
             onChange={this.onSelectInstrument}
-            value='synth'
+            value='drums'
             name='instrument'
           />
         </div>

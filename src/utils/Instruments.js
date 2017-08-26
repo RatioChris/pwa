@@ -22,8 +22,7 @@ export default class Instruments {
   getNoteFromMatrix (obj) {
     return {
       time: beats[obj.column],
-      note: notes[obj.row],
-      inst: obj.inst
+      note: notes[obj.row]
     }
   }
 
@@ -38,6 +37,18 @@ export default class Instruments {
   }
   getSynth () {
     return synth()
+  }
+  getKick () {
+    return kick()
+  }
+  getSnare () {
+    return snare()
+  }
+  getHighHat () {
+    return highHat()
+  }
+  getHighHatOpen () {
+    return highHatOpen()
   }
 }
 
@@ -89,12 +100,12 @@ const autoWah = new Tone.AutoWah({
 
 const delay = new Tone.PingPongDelay({
   delayTime: 0.25,
-  feedback: 0.25,
-  wet: 0.1
+  feedback: 0.4,
+  wet: 0.08
 })
 
 const distortion = new Tone.Distortion({
-  distortion: 1,
+  distortion: 10,
   oversample: '4x',
   wet: 1
 })
@@ -128,8 +139,8 @@ const lowPass = new Tone.Filter({
  * Synth
  */
 const synth = () => {
-  let inst = new Tone.PolySynth(6, Tone.MonoSynth).chain(lowPass)
-  inst.set({
+  let instrument = new Tone.PolySynth(6, Tone.MonoSynth).chain(lowPass)
+  instrument.set({
     oscillator: {
       type: 'square'
     },
@@ -139,15 +150,15 @@ const synth = () => {
     }
   })
 
-  return inst
+  return instrument
 }
 
 /**
  * Guitar
  */
 const guitar = () => {
-  let inst = new Tone.PolySynth(6, Tone.MonoSynth).chain(delay, distortion, reverb, lowPass)
-  inst.set({
+  let instrument = new Tone.PolySynth(6, Tone.MonoSynth).chain(delay, distortion, reverb, lowPass)
+  instrument.set({
     oscillator: {
       type: 'square'
     },
@@ -157,15 +168,15 @@ const guitar = () => {
     }
   })
 
-  return inst
+  return instrument
 }
 
 /**
  * Bass
  */
 const bass = () => {
-  let inst = new Tone.PolySynth(6, Tone.MonoSynth).chain(autoWah, lowPass)
-  inst.set({
+  let instrument = new Tone.PolySynth(6, Tone.MonoSynth).chain(autoWah, lowPass)
+  instrument.set({
     oscillator: {
       type: 'square'
     },
@@ -177,47 +188,34 @@ const bass = () => {
     }
   })
 
-  return inst
+  return instrument
 }
 
 /**
- * Hi-hat Open
+ * Drums
  */
-const openHiHat = new Tone.NoiseSynth({
-  'volume': -10,
-  'filter': {
-    'Q': 1
-  },
-  'envelope': {
-    'attack': 0.01,
-    'decay': 0.3
-  },
-  'filterEnvelope': {
-    'attack': 0.01,
-    'decay': 0.03,
-    'baseFrequency': 4000,
-    'octaves': -2.5,
-    'exponent': 4
-  }
-})
+const kick = () => {
+  return new Tone.Sampler({
+    url: './samples/kick.mp3',
+    volume: 20
+  }).toMaster()
+}
 
-/**
- * Hi-hat Closed
- */
-const closedHiHat = new Tone.NoiseSynth({
-  'volume': -10,
-  'filter': {
-    'Q': 1
-  },
-  'envelope': {
-    'attack': 0.01,
-    'decay': 0.15
-  },
-  'filterEnvelope': {
-    'attack': 0.01,
-    'decay': 0.03,
-    'baseFrequency': 4000,
-    'octaves': -2.5,
-    'exponent': 4
-  }
-})
+const snare = () => {
+  return new Tone.Sampler({
+    url: './samples/snare.mp3',
+    volume: 15
+  }).toMaster()
+}
+
+const highHat = () => {
+  return new Tone.Sampler({
+    url: './samples/hh.mp3'
+  }).toMaster()
+}
+
+const highHatOpen = () => {
+  return new Tone.Sampler({
+    url: './samples/hho.mp3'
+  }).toMaster()
+}
