@@ -16,8 +16,8 @@ const color2 = purple[400]
 const color3 = pink[500]
 
 let sequencer
-let measures = 8
-let beatsPerMeasure = 4
+let measures = 2
+let beatsPerMeasure = 16
 let instruments = new Instruments(measures, beatsPerMeasure)
 let bass = null
 let guitar = null
@@ -33,10 +33,9 @@ class Sequencer extends Component {
 
     this.arrGuitar = [{'row': 0, 'column': 0, 'inst': 'guitar'}, {'row': 7, 'column': 0, 'inst': 'guitar'}, {'row': 3, 'column': 2, 'inst': 'guitar'}, {'row': 10, 'column': 2, 'inst': 'guitar'}, {'row': 5, 'column': 4, 'inst': 'guitar'}, {'row': 12, 'column': 4, 'inst': 'guitar'}, {'row': 0, 'column': 7, 'inst': 'guitar'}, {'row': 7, 'column': 7, 'inst': 'guitar'}, {'row': 3, 'column': 9, 'inst': 'guitar'}, {'row': 10, 'column': 9, 'inst': 'guitar'}, {'row': 6, 'column': 11, 'inst': 'guitar'}, {'row': 13, 'column': 11, 'inst': 'guitar'}, {'row': 5, 'column': 12, 'inst': 'guitar'}, {'row': 12, 'column': 12, 'inst': 'guitar'}, {'row': 0, 'column': 16, 'inst': 'guitar'}, {'row': 7, 'column': 16, 'inst': 'guitar'}, {'row': 3, 'column': 18, 'inst': 'guitar'}, {'row': 10, 'column': 18, 'inst': 'guitar'}, {'row': 5, 'column': 20, 'inst': 'guitar'}, {'row': 12, 'column': 20, 'inst': 'guitar'}, {'row': 3, 'column': 23, 'inst': 'guitar'}, {'row': 10, 'column': 23, 'inst': 'guitar'}, {'row': 0, 'column': 25, 'inst': 'guitar'}, {'row': 7, 'column': 25, 'inst': 'guitar'}]
     this.arrBass = [{'row': 0, 'column': 0, 'inst': 'bass'}, {'row': 0, 'column': 2, 'inst': 'bass'}, {'row': 0, 'column': 4, 'inst': 'bass'}, {'row': 0, 'column': 6, 'inst': 'bass'}, {'row': 0, 'column': 8, 'inst': 'bass'}, {'row': 0, 'column': 10, 'inst': 'bass'}, {'row': 0, 'column': 12, 'inst': 'bass'}, {'row': 0, 'column': 14, 'inst': 'bass'}, {'row': 0, 'column': 16, 'inst': 'bass'}, {'row': 0, 'column': 18, 'inst': 'bass'}, {'row': 0, 'column': 20, 'inst': 'bass'}, {'row': 0, 'column': 22, 'inst': 'bass'}, {'row': 0, 'column': 24, 'inst': 'bass'}, {'row': 0, 'column': 26, 'inst': 'bass'}, {'row': 0, 'column': 28, 'inst': 'bass'}, {'row': 0, 'column': 30, 'inst': 'bass'}]
-    this.data = this.arrGuitar.concat(this.arrBass)
+    this.data = [] // this.arrGuitar.concat(this.arrBass)
 
     this.state = {
-      data: [],
       instrument: 'guitar',
       paused: true
     }
@@ -81,14 +80,18 @@ class Sequencer extends Component {
   }
 
   initTone () {
-    Tone.Transport.bpm.value = 240
+    Tone.Transport.bpm.value = 60
     Tone.Transport.loopEnd = `${measures}m`
     Tone.Transport.loop = true
     // Tone.Transport.start(4)
   }
 
   initNexus () {
-    if (sequencer) sequencer.destroy()
+    let step = 0
+    if (sequencer) {
+      step = sequencer.stepper.value
+      sequencer.destroy()
+    }
     sequencer = new window.Nexus.Sequencer('#sequencer', {
       'size': [window.innerWidth, 300],
       'mode': 'toggle',
@@ -96,6 +99,7 @@ class Sequencer extends Component {
       'columns': measures * beatsPerMeasure
     })
     this.renderMatrix()
+    sequencer.stepper.value = step
 
     sequencer.on('change', (obj) => {
       this.updateSynth(obj)
@@ -124,11 +128,10 @@ class Sequencer extends Component {
   initTransport () {
     Tone.Transport.scheduleRepeat((time) => {
       this.data.forEach((i) => {
-        let tone = instruments.getNoteFromMatrix(i)
-        // console.log(i, tone)
+        const note = instruments.getNoteFromMatrix(i)
         Tone.Transport.scheduleOnce(() => {
-          this.triggerInstrument(i, tone.note)
-        }, tone.time)
+          this.triggerInstrument(i, note.tone)
+        }, note.time)
       })
     }, `${measures}m`)
 
@@ -186,7 +189,6 @@ class Sequencer extends Component {
 
       this.data = data.filter((obj) => {
         let match = obj.row === i.row && obj.column === i.column && obj.inst === i.inst
-        console.warn(obj, i, match)
         return !match
       })
 
@@ -197,7 +199,7 @@ class Sequencer extends Component {
   }
 
   triggerInstrument (i, note) {
-    const time = `${measures * beatsPerMeasure}n`
+    const time = `${beatsPerMeasure}n`
 
     switch (i.inst) {
       case 'guitar':

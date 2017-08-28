@@ -22,7 +22,7 @@ export default class Instruments {
   getNoteFromMatrix (obj) {
     return {
       time: beats[obj.column],
-      note: notes[obj.row]
+      tone: notes[obj.row]
     }
   }
 
@@ -65,7 +65,7 @@ const _setBeats = (measures, beatsPerMeasure) => {
   let bar = 0
   let beat = 0
   for (var i = 0; i < (measures * beatsPerMeasure); i++) {
-    beats.push(`${bar}:${beat}`)
+    beats.push(`${bar}:0:${beat}`)
     beat++
     if (beat % beatsPerMeasure === 0) {
       beat = 0
@@ -105,7 +105,7 @@ const delay = new Tone.PingPongDelay({
 })
 
 const distortion = new Tone.Distortion({
-  distortion: 10,
+  distortion: 5,
   oversample: '4x',
   wet: 1
 })
@@ -157,14 +157,14 @@ const synth = () => {
  * Guitar
  */
 const guitar = () => {
-  let instrument = new Tone.PolySynth(6, Tone.MonoSynth).chain(delay, distortion, reverb, lowPass)
+  let instrument = new Tone.PolySynth(6, Tone.MonoSynth).chain(delay, reverb, lowPass)
   instrument.set({
     oscillator: {
       type: 'square'
     },
     envelope: {
-      attack: 0.1,
-      release: 2
+      attack: 0.01,
+      release: 3
     }
   })
 
@@ -210,12 +210,15 @@ const snare = () => {
 
 const highHat = () => {
   return new Tone.Sampler({
-    url: './samples/hh.mp3'
+    url: './samples/highHat.mp3'
   }).toMaster()
 }
 
 const highHatOpen = () => {
   return new Tone.Sampler({
-    url: './samples/hho.mp3'
+    url: './samples/highHatOpen.mp3',
+    envelope: {
+      release: 2
+    }
   }).toMaster()
 }
