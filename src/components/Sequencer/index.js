@@ -1,27 +1,27 @@
 import React, { Component } from 'react'
 import Tone from 'tone'
-import _ from 'underscore'
-import './styles.css'
+import { find } from 'underscore'
 import firebase from '../../utils/firebase.js'
 import Instruments from '../../utils/Instruments'
+import Controls from '../Controls'
+import './styles.css'
 
-import { deepOrange, pink, purple } from 'material-ui/colors'
-import Button from 'material-ui/Button'
-import PlayIcon from 'material-ui-icons/PlayArrow'
-import PauseIcon from 'material-ui-icons/Pause'
-import Radio from 'material-ui/Radio'
+import { deepOrange, green, purple } from 'material-ui/colors'
 
 const color1 = deepOrange[500]
+const color1_lite = deepOrange[50]
 const color2 = purple[400]
-const color3 = pink[500]
+const color2_lite = purple[50]
+const color3 = green[500]
+const color3_lite = green[50]
 
-let sequencer
 let measures = 2
 let beatsPerMeasure = 16
+let scaleLength = 16
+let sequencer
 let instruments = new Instruments(measures, beatsPerMeasure)
 let bass = null
 let guitar = null
-let synth = null
 let kick = null
 let snare = null
 let highHat = null
@@ -31,8 +31,8 @@ class Sequencer extends Component {
   constructor (props) {
     super(props)
 
-    this.arrGuitar = [{'row': 0, 'column': 0, 'inst': 'guitar'}, {'row': 7, 'column': 0, 'inst': 'guitar'}, {'row': 3, 'column': 2, 'inst': 'guitar'}, {'row': 10, 'column': 2, 'inst': 'guitar'}, {'row': 5, 'column': 4, 'inst': 'guitar'}, {'row': 12, 'column': 4, 'inst': 'guitar'}, {'row': 0, 'column': 7, 'inst': 'guitar'}, {'row': 7, 'column': 7, 'inst': 'guitar'}, {'row': 3, 'column': 9, 'inst': 'guitar'}, {'row': 10, 'column': 9, 'inst': 'guitar'}, {'row': 6, 'column': 11, 'inst': 'guitar'}, {'row': 13, 'column': 11, 'inst': 'guitar'}, {'row': 5, 'column': 12, 'inst': 'guitar'}, {'row': 12, 'column': 12, 'inst': 'guitar'}, {'row': 0, 'column': 16, 'inst': 'guitar'}, {'row': 7, 'column': 16, 'inst': 'guitar'}, {'row': 3, 'column': 18, 'inst': 'guitar'}, {'row': 10, 'column': 18, 'inst': 'guitar'}, {'row': 5, 'column': 20, 'inst': 'guitar'}, {'row': 12, 'column': 20, 'inst': 'guitar'}, {'row': 3, 'column': 23, 'inst': 'guitar'}, {'row': 10, 'column': 23, 'inst': 'guitar'}, {'row': 0, 'column': 25, 'inst': 'guitar'}, {'row': 7, 'column': 25, 'inst': 'guitar'}]
-    this.arrBass = [{'row': 0, 'column': 0, 'inst': 'bass'}, {'row': 0, 'column': 2, 'inst': 'bass'}, {'row': 0, 'column': 4, 'inst': 'bass'}, {'row': 0, 'column': 6, 'inst': 'bass'}, {'row': 0, 'column': 8, 'inst': 'bass'}, {'row': 0, 'column': 10, 'inst': 'bass'}, {'row': 0, 'column': 12, 'inst': 'bass'}, {'row': 0, 'column': 14, 'inst': 'bass'}, {'row': 0, 'column': 16, 'inst': 'bass'}, {'row': 0, 'column': 18, 'inst': 'bass'}, {'row': 0, 'column': 20, 'inst': 'bass'}, {'row': 0, 'column': 22, 'inst': 'bass'}, {'row': 0, 'column': 24, 'inst': 'bass'}, {'row': 0, 'column': 26, 'inst': 'bass'}, {'row': 0, 'column': 28, 'inst': 'bass'}, {'row': 0, 'column': 30, 'inst': 'bass'}]
+    // this.arrGuitar = [{'row': 0, 'column': 0, 'inst': 'guitar'}, {'row': 7, 'column': 0, 'inst': 'guitar'}, {'row': 3, 'column': 2, 'inst': 'guitar'}, {'row': 10, 'column': 2, 'inst': 'guitar'}, {'row': 5, 'column': 4, 'inst': 'guitar'}, {'row': 12, 'column': 4, 'inst': 'guitar'}, {'row': 0, 'column': 7, 'inst': 'guitar'}, {'row': 7, 'column': 7, 'inst': 'guitar'}, {'row': 3, 'column': 9, 'inst': 'guitar'}, {'row': 10, 'column': 9, 'inst': 'guitar'}, {'row': 6, 'column': 11, 'inst': 'guitar'}, {'row': 13, 'column': 11, 'inst': 'guitar'}, {'row': 5, 'column': 12, 'inst': 'guitar'}, {'row': 12, 'column': 12, 'inst': 'guitar'}, {'row': 0, 'column': 16, 'inst': 'guitar'}, {'row': 7, 'column': 16, 'inst': 'guitar'}, {'row': 3, 'column': 18, 'inst': 'guitar'}, {'row': 10, 'column': 18, 'inst': 'guitar'}, {'row': 5, 'column': 20, 'inst': 'guitar'}, {'row': 12, 'column': 20, 'inst': 'guitar'}, {'row': 3, 'column': 23, 'inst': 'guitar'}, {'row': 10, 'column': 23, 'inst': 'guitar'}, {'row': 0, 'column': 25, 'inst': 'guitar'}, {'row': 7, 'column': 25, 'inst': 'guitar'}]
+    // this.arrBass = [{'row': 0, 'column': 0, 'inst': 'bass'}, {'row': 0, 'column': 2, 'inst': 'bass'}, {'row': 0, 'column': 4, 'inst': 'bass'}, {'row': 0, 'column': 6, 'inst': 'bass'}, {'row': 0, 'column': 8, 'inst': 'bass'}, {'row': 0, 'column': 10, 'inst': 'bass'}, {'row': 0, 'column': 12, 'inst': 'bass'}, {'row': 0, 'column': 14, 'inst': 'bass'}, {'row': 0, 'column': 16, 'inst': 'bass'}, {'row': 0, 'column': 18, 'inst': 'bass'}, {'row': 0, 'column': 20, 'inst': 'bass'}, {'row': 0, 'column': 22, 'inst': 'bass'}, {'row': 0, 'column': 24, 'inst': 'bass'}, {'row': 0, 'column': 26, 'inst': 'bass'}, {'row': 0, 'column': 28, 'inst': 'bass'}, {'row': 0, 'column': 30, 'inst': 'bass'}]
     this.data = [] // this.arrGuitar.concat(this.arrBass)
 
     this.state = {
@@ -47,7 +47,6 @@ class Sequencer extends Component {
   componentDidMount () {
     bass = instruments.getBass()
     guitar = instruments.getGuitar()
-    synth = instruments.getSynth()
     kick = instruments.getKick()
     snare = instruments.getSnare()
     highHat = instruments.getHighHat()
@@ -92,12 +91,14 @@ class Sequencer extends Component {
       step = sequencer.stepper.value
       sequencer.destroy()
     }
+
     sequencer = new window.Nexus.Sequencer('#sequencer', {
-      'size': [window.innerWidth, 300],
+      'size': [window.innerWidth, window.innerHeight - 170],
       'mode': 'toggle',
-      'rows': 14,
+      'rows': this.state.instrument === 'drums' ? 4 : scaleLength,
       'columns': measures * beatsPerMeasure
     })
+
     this.renderMatrix()
     sequencer.stepper.value = step
 
@@ -147,18 +148,20 @@ class Sequencer extends Component {
 
     switch (instrument) {
       case 'guitar':
+        sequencer.colorize('fill', color1_lite)
         sequencer.colorize('accent', color1)
         break
       case 'bass':
+        sequencer.colorize('fill', color2_lite)
         sequencer.colorize('accent', color2)
         break
       default:
+        sequencer.colorize('fill', color3_lite)
         sequencer.colorize('accent', color3)
         break
     }
 
-    sequencer.resize(window.innerWidth, 300)
-    // sequencer.matrix.populate.all(0)
+    sequencer.resize(window.innerWidth, window.innerHeight - 170)
     // sequencer.matrix.set.all(this.matrix)
 
     this.data.forEach((i) => {
@@ -173,11 +176,10 @@ class Sequencer extends Component {
     i['inst'] = this.state.instrument
 
     if (state) {
-      if (_.find(this.data, i) === undefined) {
-        // sequencer.matrix.set.cell(i.column, i.row, 1)
+      if (find(this.data, i) === undefined) {
         this.data.push(i)
-        let tone = instruments.getNoteFromMatrix(i)
-        this.triggerInstrument(i, tone.note)
+        let note = instruments.getNoteFromMatrix(i)
+        this.triggerInstrument(i, note.tone)
 
         // const itemsRef = firebase.database().ref('sessions')
         // itemsRef.push(i)
@@ -195,7 +197,7 @@ class Sequencer extends Component {
       // const itemRef = firebase.database().ref(`/sessions/${itemId}`)
       // itemRef.remove()
     }
-    console.log('updateSynth', JSON.stringify(this.data))
+    // console.log('updateSynth', JSON.stringify(this.data))
   }
 
   triggerInstrument (i, note) {
@@ -215,7 +217,6 @@ class Sequencer extends Component {
         if (i.row === 3) highHatOpen.triggerAttackRelease(0, time)
         break
       default:
-        synth.triggerAttackRelease(0, time)
         break
     }
   }
@@ -231,6 +232,7 @@ class Sequencer extends Component {
   }
 
   onSelectInstrument (event) {
+    console.warn(event)
     this.setState({ instrument: event.currentTarget.value })
 
     setTimeout(() => {
@@ -239,41 +241,16 @@ class Sequencer extends Component {
   }
 
   render () {
-    let icon = null
-    if (this.state.paused) {
-      icon = <PlayIcon />
-    } else {
-      icon = <PauseIcon />
-    }
-
     return (
       <section>
-        <div className='controls'>
-          <Button fab color='primary' onClick={this.onTogglePlay}>
-            {icon}
-          </Button>
-
-          <Radio
-            checked={this.state.instrument === 'guitar'}
-            onChange={this.onSelectInstrument}
-            value='guitar'
-            name='instrument'
-          />
-          <Radio
-            checked={this.state.instrument === 'bass'}
-            onChange={this.onSelectInstrument}
-            value='bass'
-            name='instrument'
-          />
-          <Radio
-            checked={this.state.instrument === 'drums'}
-            onChange={this.onSelectInstrument}
-            value='drums'
-            name='instrument'
-          />
-        </div>
-
         <div id='sequencer' />
+
+        <Controls
+          instrument={this.state.instrument}
+          paused={this.state.paused}
+          onSelectInstrument={this.onSelectInstrument}
+          onTogglePlay={this.onTogglePlay}
+        />
       </section>
     )
   }

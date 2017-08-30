@@ -1,0 +1,12 @@
+.controls {
+  position: fixed !important;
+  bottom: 0;
+}
+
+.controls--toolbar {
+  justify-content: center;
+}
+
+.controls--button {
+  margin-right: 50px;
+}

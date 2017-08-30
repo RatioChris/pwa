@@ -1,5 +1,6 @@
 #sequencer {
   transform: rotateX(180deg);
+  margin: 20px 0 85px;
 }
 
 #sequencer span:nth-child(4n) {
@@ -12,8 +13,4 @@
 
 #sequencer span:nth-child(32n) {
   border-right: 0;
-}
-
-.controls {
-  margin: 10px;
 }

@@ -104,13 +104,13 @@ const delay = new Tone.PingPongDelay({
   wet: 0.08
 })
 
-const distortion = new Tone.Distortion({
+/* const distortion = new Tone.Distortion({
   distortion: 5,
   oversample: '4x',
   wet: 1
 })
 
-/* const phaser = new Tone.Phaser({
+const phaser = new Tone.Phaser({
   frequency: 0.5,
   octaves: 3,
   baseFrequency: 3000

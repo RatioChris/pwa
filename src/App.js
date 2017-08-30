@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 // import './App.css'
-// import logo from './logo.svg'
 import Header from './components/Header'
 import Sequencer from './components/Sequencer'
 
