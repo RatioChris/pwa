@@ -1,8 +1,12 @@
-.title {
+.header {
+  z-index: 1;
+}
+
+.header--title {
   flex: 1;
 }
 
-.logo {
+.header--logo {
   width: 56px;
   height: 56px;
 }

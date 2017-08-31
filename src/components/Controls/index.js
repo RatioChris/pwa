@@ -10,9 +10,28 @@ import PauseIcon from 'material-ui-icons/Pause'
 import Radio from 'material-ui/Radio'
 
 class Controls extends Component {
+  constructor (props) {
+    super(props)
+
+    this.onPlayPause = this.onPlayPause.bind(this)
+    this.onSetInstrument = this.onSetInstrument.bind(this)
+  }
+
+  onPlayPause () {
+    const paused = this.props.player.paused
+    this.props.onPlayPause(!paused)
+  }
+
+  onSetInstrument (event) {
+    const instrument = event.currentTarget.value
+    this.props.onSetInstrument(instrument)
+  }
+
   render () {
+    const state = this.props.player || {}
     let icon = null
-    if (this.props.paused) {
+
+    if (state.paused) {
       icon = <PlayIcon />
     } else {
       icon = <PauseIcon />
@@ -23,7 +42,7 @@ class Controls extends Component {
         <Toolbar className='controls--toolbar'>
           <Button fab className='controls--button'
             color='primary'
-            onClick={this.props.onTogglePlay}
+            onClick={this.onPlayPause}
           >
             {icon}
           </Button>
@@ -34,8 +53,8 @@ class Controls extends Component {
                 <Radio
                   name='instrument'
                   value='guitar'
-                  checked={this.props.instrument === 'guitar'}
-                  onChange={this.props.onSelectInstrument}
+                  checked={state.instrument === 'guitar'}
+                  onChange={this.onSetInstrument}
                 />
               }
               label='Guitar'
@@ -46,8 +65,8 @@ class Controls extends Component {
                 <Radio
                   name='instrument'
                   value='bass'
-                  checked={this.props.instrument === 'bass'}
-                  onChange={this.props.onSelectInstrument}
+                  checked={state.instrument === 'bass'}
+                  onChange={this.onSetInstrument}
                 />
               }
               label='Bass'
@@ -58,8 +77,8 @@ class Controls extends Component {
                 <Radio
                   name='instrument'
                   value='drums'
-                  checked={this.props.instrument === 'drums'}
-                  onChange={this.props.onSelectInstrument}
+                  checked={state.instrument === 'drums'}
+                  onChange={this.onSetInstrument}
                 />
               }
               label='Drums'

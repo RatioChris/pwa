@@ -1,15 +1,22 @@
 import React, { Component } from 'react'
-// import './App.css'
-import Header from './components/Header'
-import Sequencer from './components/Sequencer'
+import ControlsContainer from './containers/ControlsContainer'
+import DrawerContainer from './containers/DrawerContainer'
+import HeaderContainer from './containers/HeaderContainer'
+import SequencerContainer from './containers/SequencerContainer'
+import { MuiThemeProvider } from 'material-ui/styles'
+import theme from './utils/theme'
 
 class App extends Component {
   render () {
     return (
-      <div className='App'>
-        <Header />
-        <Sequencer />
-      </div>
+      <MuiThemeProvider theme={theme}>
+        <div className='App'>
+          <DrawerContainer />
+          <HeaderContainer />
+          <SequencerContainer />
+          <ControlsContainer />
+        </div>
+      </MuiThemeProvider>
     )
   }
 }

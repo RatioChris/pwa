@@ -3,7 +3,6 @@ import Tone from 'tone'
 import { find } from 'underscore'
 import firebase from '../../utils/firebase.js'
 import Instruments from '../../utils/Instruments'
-import Controls from '../Controls'
 import './styles.css'
 
 import { deepOrange, green, purple } from 'material-ui/colors'
@@ -34,14 +33,6 @@ class Sequencer extends Component {
     // this.arrGuitar = [{'row': 0, 'column': 0, 'inst': 'guitar'}, {'row': 7, 'column': 0, 'inst': 'guitar'}, {'row': 3, 'column': 2, 'inst': 'guitar'}, {'row': 10, 'column': 2, 'inst': 'guitar'}, {'row': 5, 'column': 4, 'inst': 'guitar'}, {'row': 12, 'column': 4, 'inst': 'guitar'}, {'row': 0, 'column': 7, 'inst': 'guitar'}, {'row': 7, 'column': 7, 'inst': 'guitar'}, {'row': 3, 'column': 9, 'inst': 'guitar'}, {'row': 10, 'column': 9, 'inst': 'guitar'}, {'row': 6, 'column': 11, 'inst': 'guitar'}, {'row': 13, 'column': 11, 'inst': 'guitar'}, {'row': 5, 'column': 12, 'inst': 'guitar'}, {'row': 12, 'column': 12, 'inst': 'guitar'}, {'row': 0, 'column': 16, 'inst': 'guitar'}, {'row': 7, 'column': 16, 'inst': 'guitar'}, {'row': 3, 'column': 18, 'inst': 'guitar'}, {'row': 10, 'column': 18, 'inst': 'guitar'}, {'row': 5, 'column': 20, 'inst': 'guitar'}, {'row': 12, 'column': 20, 'inst': 'guitar'}, {'row': 3, 'column': 23, 'inst': 'guitar'}, {'row': 10, 'column': 23, 'inst': 'guitar'}, {'row': 0, 'column': 25, 'inst': 'guitar'}, {'row': 7, 'column': 25, 'inst': 'guitar'}]
     // this.arrBass = [{'row': 0, 'column': 0, 'inst': 'bass'}, {'row': 0, 'column': 2, 'inst': 'bass'}, {'row': 0, 'column': 4, 'inst': 'bass'}, {'row': 0, 'column': 6, 'inst': 'bass'}, {'row': 0, 'column': 8, 'inst': 'bass'}, {'row': 0, 'column': 10, 'inst': 'bass'}, {'row': 0, 'column': 12, 'inst': 'bass'}, {'row': 0, 'column': 14, 'inst': 'bass'}, {'row': 0, 'column': 16, 'inst': 'bass'}, {'row': 0, 'column': 18, 'inst': 'bass'}, {'row': 0, 'column': 20, 'inst': 'bass'}, {'row': 0, 'column': 22, 'inst': 'bass'}, {'row': 0, 'column': 24, 'inst': 'bass'}, {'row': 0, 'column': 26, 'inst': 'bass'}, {'row': 0, 'column': 28, 'inst': 'bass'}, {'row': 0, 'column': 30, 'inst': 'bass'}]
     this.data = [] // this.arrGuitar.concat(this.arrBass)
-
-    this.state = {
-      instrument: 'guitar',
-      paused: true
-    }
-
-    this.onTogglePlay = this.onTogglePlay.bind(this)
-    this.onSelectInstrument = this.onSelectInstrument.bind(this)
   }
 
   componentDidMount () {
@@ -65,6 +56,16 @@ class Sequencer extends Component {
     })
   }
 
+  componentWillReceiveProps (nextProps) {
+    if (this.props.player.paused !== nextProps.player.paused) {
+      this.onPlayPause(nextProps.player.paused)
+    }
+
+    if (this.props.player.instrument !== nextProps.player.instrument) {
+      this.onSetInstrument()
+    }
+  }
+
   throttle (type, name) {
     let isPaused = false
     const func = function () {
@@ -86,7 +87,9 @@ class Sequencer extends Component {
   }
 
   initNexus () {
+    const instrument = this.props.player.instrument
     let step = 0
+
     if (sequencer) {
       step = sequencer.stepper.value
       sequencer.destroy()
@@ -95,7 +98,7 @@ class Sequencer extends Component {
     sequencer = new window.Nexus.Sequencer('#sequencer', {
       'size': [window.innerWidth, window.innerHeight - 170],
       'mode': 'toggle',
-      'rows': this.state.instrument === 'drums' ? 4 : scaleLength,
+      'rows': instrument === 'drums' ? 4 : scaleLength,
       'columns': measures * beatsPerMeasure
     })
 
@@ -144,7 +147,7 @@ class Sequencer extends Component {
   }
 
   renderMatrix () {
-    let instrument = this.state.instrument
+    const instrument = this.props.player.instrument
 
     switch (instrument) {
       case 'guitar':
@@ -170,19 +173,22 @@ class Sequencer extends Component {
   }
 
   updateSynth (i) {
-    console.log(JSON.stringify(i))
+    // console.log(JSON.stringify(i))
     const state = i.state
     delete i.state
-    i['inst'] = this.state.instrument
+    i['inst'] = this.props.player.instrument
 
     if (state) {
       if (find(this.data, i) === undefined) {
         this.data.push(i)
-        let note = instruments.getNoteFromMatrix(i)
-        this.triggerInstrument(i, note.tone)
 
         // const itemsRef = firebase.database().ref('sessions')
         // itemsRef.push(i)
+        // var key = itemsRef.key
+        // this.data.push(key: i)
+
+        let note = instruments.getNoteFromMatrix(i)
+        this.triggerInstrument(i, note.tone)
       }
     } else {
       const data = this.data
@@ -196,8 +202,9 @@ class Sequencer extends Component {
 
       // const itemRef = firebase.database().ref(`/sessions/${itemId}`)
       // itemRef.remove()
+      // delete this.data[key]
     }
-    // console.log('updateSynth', JSON.stringify(this.data))
+    console.log('updateSynth', JSON.stringify(this.data))
   }
 
   triggerInstrument (i, note) {
@@ -221,20 +228,15 @@ class Sequencer extends Component {
     }
   }
 
-  onTogglePlay () {
-    if (this.state.paused) {
-      this.setState({ paused: false })
-      Tone.Transport.start()
-    } else {
-      this.setState({ paused: true })
+  onPlayPause (paused) {
+    if (paused) {
       Tone.Transport.pause()
+    } else {
+      Tone.Transport.start()
     }
   }
 
-  onSelectInstrument (event) {
-    console.warn(event)
-    this.setState({ instrument: event.currentTarget.value })
-
+  onSetInstrument () {
     setTimeout(() => {
       this.initNexus()
     }, 0)
@@ -242,16 +244,7 @@ class Sequencer extends Component {
 
   render () {
     return (
-      <section>
-        <div id='sequencer' />
-
-        <Controls
-          instrument={this.state.instrument}
-          paused={this.state.paused}
-          onSelectInstrument={this.onSelectInstrument}
-          onTogglePlay={this.onTogglePlay}
-        />
-      </section>
+      <div id='sequencer' />
     )
   }
 }
