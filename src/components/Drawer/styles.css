@@ -1,9 +1,9 @@
 .drawer {
-  width: 240px !important;
+  width: 300px !important;
   font-family: 'Raleway', sans-serif;
 }
 
 .drawer--button {
-  width: 240px !important;
+  width: 300px !important;
   text-align: right;
 }

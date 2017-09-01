@@ -3,7 +3,7 @@ import Sequencer from '../components/Sequencer'
 
 const mapStateToProps = (state) => {
   return {
-    player: state.player
+    session: state.session
   }
 }
 

@@ -1,8 +1,5 @@
 /* global fetch, URL */
 
-import bows from 'bows'
-const log = bows('Service Worker')
-
 // In production, we register a service worker to serve assets from local cache.
 
 // This lets the app load faster on subsequent visits in production, and gives
@@ -24,7 +21,7 @@ const isLocalhost = Boolean(
 )
 
 export default function register () {
-  log('register')
+  console.log('register')
   if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
     // The URL constructor is available in all browsers that support SW.
     const publicUrl = new URL(process.env.PUBLIC_URL, window.location)
@@ -50,7 +47,7 @@ export default function register () {
 }
 
 function registerValidSW (swUrl) {
-  log('registerValidSW', swUrl)
+  console.log('registerValidSW', swUrl)
   navigator.serviceWorker
     .register(swUrl)
     .then(registration => {
@@ -63,12 +60,12 @@ function registerValidSW (swUrl) {
               // the fresh content will have been added to the cache.
               // It's the perfect time to display a "New content is
               // available; please refresh." message in your web app.
-              log('New content is available; please refresh.')
+              console.log('New content is available; please refresh.')
             } else {
               // At this point, everything has been precached.
               // It's the perfect time to display a
               // "Content is cached for offline use." message.
-              log('Content is cached for offline use.')
+              console.log('Content is cached for offline use.')
             }
           }
         }
@@ -80,7 +77,7 @@ function registerValidSW (swUrl) {
 }
 
 function checkValidServiceWorker (swUrl) {
-  log('checkValidServiceWorker', swUrl)
+  console.log('checkValidServiceWorker', swUrl)
   // Check if the service worker can be found. If it can't reload the page.
   fetch(swUrl)
     .then(response => {
@@ -101,12 +98,12 @@ function checkValidServiceWorker (swUrl) {
       }
     })
     .catch(() => {
-      log('No internet connection found. App is running in offline mode.')
+      console.warn('No internet connection found. App is running in offline mode.')
     })
 }
 
 export function unregister () {
-  log('unregister')
+  console.log('unregister')
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.ready.then(registration => {
       registration.unregister()

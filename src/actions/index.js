@@ -4,6 +4,7 @@
 export const DRAWER = 'DRAWER'
 export const INSTRUMENT = 'INSTRUMENT'
 export const PAUSED = 'PAUSED'
+export const SESSION_KEY = 'SESSION_KEY'
 
 /*
  * action creators
@@ -29,6 +30,13 @@ export const setPaused = (bool) => {
   }
 }
 
+export const setSession = (val) => {
+  return {
+    type: SESSION_KEY,
+    val
+  }
+}
+
 /*
  * action methods
  */
@@ -47,5 +55,11 @@ export const onSetInstrument = (val) => {
 export const onSetPaused = (bool) => {
   return (dispatch, getState, container) => {
     return dispatch(setPaused(bool))
+  }
+}
+
+export const onSetSession = (val) => {
+  return (dispatch, getState, container) => {
+    return dispatch(setSession(val))
   }
 }

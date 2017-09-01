@@ -1,9 +1,11 @@
 import React, { Component } from 'react'
+import firebase from '../../utils/firebase.js'
 import ChevronLeftIcon from 'material-ui-icons/ChevronLeft'
 import Divider from 'material-ui/Divider'
 import Drawer from 'material-ui/Drawer'
 import IconButton from 'material-ui/IconButton'
 import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List'
+import VolumeMute from 'material-ui-icons/VolumeMute'
 import VolumeUp from 'material-ui-icons/VolumeUp'
 import './styles.css'
 
@@ -11,7 +13,42 @@ class Menu extends Component {
   constructor (props) {
     super(props)
 
+    this.sessionRef = {}
+    this.sessions = []
+
+    this.onSetSession = this.onSetSession.bind(this)
     this.onToggleDrawer = this.onToggleDrawer.bind(this)
+  }
+
+  componentDidMount () {
+    this.initData()
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (this.props.session.key !== nextProps.session.key) {
+      this.key = nextProps.session.key
+    }
+  }
+
+  initData () {
+    this.sessionRef = firebase.database().ref(`sessions`)
+
+    // let x = firebase.database().ref(`sessions`)
+    // x.push({data: ''})
+
+    this.sessionRef.on('value', (snapshot) => {
+      const items = snapshot.val()
+      // this.sessions = items || {}
+
+      this.sessions = []
+      for (var key in items) {
+        this.sessions.push(key)
+      }
+    })
+  }
+
+  onSetSession (e) {
+    this.props.onSetSession(e.textContent)
   }
 
   onToggleDrawer () {
@@ -36,20 +73,29 @@ class Menu extends Component {
           <Divider />
 
           <List>
-            <ListItem button>
-              <ListItemIcon>
-                <VolumeUp />
-              </ListItemIcon>
-              <ListItemText inset primary='Current Session' />
-            </ListItem>
+            {this.sessions.map((item, index) => {
+              let icon = null
+              if (item === this.props.session.key) {
+                icon = <VolumeUp />
+              } else {
+                icon = <VolumeMute />
+              }
 
-            <ListItem button>
-              <ListItemText inset primary='Other Sessions' />
-            </ListItem>
+              return (
+                <ListItem button
+                  key={`menu--${index}`}
+                  onClick={(e) => this.onSetSession(e.target)}
+                >
+                  <ListItemIcon>
+                    {icon}
+                  </ListItemIcon>
 
-            <ListItem button>
-              <ListItemText inset primary='Other Sessions' />
-            </ListItem>
+                  <ListItemText inset
+                    primary={item}
+                  />
+                </ListItem>
+              )
+            }, this)}
           </List>
         </Drawer>
       </div>

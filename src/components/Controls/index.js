@@ -18,7 +18,7 @@ class Controls extends Component {
   }
 
   onPlayPause () {
-    const paused = this.props.player.paused
+    const paused = this.props.session.paused
     this.props.onPlayPause(!paused)
   }
 
@@ -28,10 +28,10 @@ class Controls extends Component {
   }
 
   render () {
-    const state = this.props.player || {}
+    const session = this.props.session || {}
     let icon = null
 
-    if (state.paused) {
+    if (session.paused) {
       icon = <PlayIcon />
     } else {
       icon = <PauseIcon />
@@ -53,7 +53,7 @@ class Controls extends Component {
                 <Radio
                   name='instrument'
                   value='guitar'
-                  checked={state.instrument === 'guitar'}
+                  checked={session.instrument === 'guitar'}
                   onChange={this.onSetInstrument}
                 />
               }
@@ -65,7 +65,7 @@ class Controls extends Component {
                 <Radio
                   name='instrument'
                   value='bass'
-                  checked={state.instrument === 'bass'}
+                  checked={session.instrument === 'bass'}
                   onChange={this.onSetInstrument}
                 />
               }
@@ -77,7 +77,7 @@ class Controls extends Component {
                 <Radio
                   name='instrument'
                   value='drums'
-                  checked={state.instrument === 'drums'}
+                  checked={session.instrument === 'drums'}
                   onChange={this.onSetInstrument}
                 />
               }
