@@ -1,9 +1,9 @@
 import { combineReducers } from 'redux'
-import player from './player'
+import session from './session'
 import ui from './ui'
 
 const rootReducer = combineReducers({
-  player,
+  session,
   ui
 })
 

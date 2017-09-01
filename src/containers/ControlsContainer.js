@@ -7,7 +7,7 @@ import Controls from '../components/Controls'
 
 const mapStateToProps = (state) => {
   return {
-    player: state.player
+    session: state.session
   }
 }
 
