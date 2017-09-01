@@ -8,6 +8,18 @@
   justify-content: center;
 }
 
-.controls--button {
-  margin-right: 50px;
+.controls--group {
+  margin: 0 25px;
+}
+
+.controls--bpm {
+  width: 50px;
+}
+
+.controls--group .MuiInput-inkbar-3p:after {
+  background-color: #3f51b5;
+}
+
+.controls--group .MuiFormLabel-focused-3k {
+  color: #3f51b5
 }

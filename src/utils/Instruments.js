@@ -89,7 +89,7 @@ const autoWah = new Tone.AutoWah({
   baseFrequency: 120,
   octaves: 0,
   Q: 0,
-  gain: 20
+  gain: 25
 })
 
 // const chorus = new Tone.Chorus()

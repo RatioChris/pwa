@@ -1,21 +1,29 @@
 import {
+  BPM,
   INSTRUMENT,
   PAUSED,
-  SESSION_KEY
+  SESSION_KEY,
+  SOLO
 } from '../actions'
 
 const session = (state = {
+  bpm: 60,
   instrument: 'guitar',
+  key: null,
   paused: true,
-  key: null
+  solo: false
 }, action) => {
   switch (action.type) {
+    case BPM:
+      return Object.assign({}, state, { bpm: action.num })
     case INSTRUMENT:
       return Object.assign({}, state, { instrument: action.val })
     case PAUSED:
       return Object.assign({}, state, { paused: action.bool })
     case SESSION_KEY:
       return Object.assign({}, state, { key: action.val })
+    case SOLO:
+      return Object.assign({}, state, { solo: action.bool })
     default:
       return state
   }

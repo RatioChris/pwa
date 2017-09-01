@@ -52,6 +52,10 @@ class Sequencer extends Component {
   }
 
   componentWillReceiveProps (nextProps) {
+    if (this.props.session.bpm !== nextProps.session.bpm) {
+      this.onSetBpm(nextProps.session.bpm)
+    }
+
     if (this.props.session.key !== nextProps.session.key) {
       this.key = nextProps.session.key
       this.initData()
@@ -88,7 +92,9 @@ class Sequencer extends Component {
   }
 
   initTone () {
-    Tone.Transport.bpm.value = 60
+
+    const bpm = this.props.session.bpm || 60
+    this.onSetBpm(bpm)
     Tone.Transport.loopEnd = `${measures}m`
     Tone.Transport.loop = true
     // Tone.Transport.start(4)
@@ -96,14 +102,17 @@ class Sequencer extends Component {
 
   initData () {
     this.dataRef = firebase.database().ref(`sessions/${this.key}/data`)
-
-    // let x = firebase.database().ref(`sessions`)
-    // x.push({data: ''})
-
     this.dataRef.on('value', (snapshot) => {
       const items = snapshot.val()
       console.warn('initData', items)
       this.data = items || {}
+    })
+
+    this.bpmRef = firebase.database().ref(`sessions/${this.key}/meta/bpm`)
+    this.bpmRef.on('value', (snapshot) => {
+      const bpm = snapshot.val()
+      console.warn('initData bpm', bpm)
+      if (bpm) this.onSetBpm(bpm)
     })
   }
 
@@ -176,9 +185,6 @@ class Sequencer extends Component {
     sequencer.resize(window.innerWidth, window.innerHeight - 170)
 
     // console.warn(this.data)
-    /* this.data.forEach((i) => {
-      if (i.inst === instrument) sequencer.matrix.set.cell(i.column, i.row, 1)
-    }) */
     for (var key in this.data) {
       let i = this.data[key]
       if (i.inst === instrument) sequencer.matrix.set.cell(i.column, i.row, 1)
@@ -193,12 +199,16 @@ class Sequencer extends Component {
 
     if (state) {
       if (find(this.data, i) === undefined) {
+        if (!this.key) {
+          const sessionsRef = firebase.database().ref(`sessions`)
+          const sessionRef = sessionsRef.push({data: ''})
+          this.key = sessionRef.key
+          this.dataRef = firebase.database().ref(`sessions/${this.key}/data`)
+          this.props.onSetSession(this.key)
+        }
+
         const noteRef = this.dataRef.push(i)
         const key = noteRef.key
-
-        // i['key'] = key
-        // this.data.push(i)
-        // this.data.push({ [key]: i })
         this.data[key] = i
 
         const note = instruments.getNoteFromMatrix(i)
@@ -206,17 +216,6 @@ class Sequencer extends Component {
       }
     } else {
       const data = this.data
-
-      /* this.data = data.filter((obj) => {
-        let match = obj.row === i.row && obj.column === i.column && obj.inst === i.inst
-        return !match
-      }) */
-
-      /* const x = data.find((obj) => {
-        let match = obj.row === i.row && obj.column === i.column && obj.inst === i.inst
-        return !match
-      })
-      console.warn(x) */
 
       for (var key in data) {
         let item = data[key]
@@ -228,14 +227,16 @@ class Sequencer extends Component {
           delete this.data[key]
           break
         }
-
-        // let i = this.data[key]
       }
     }
     // console.log('updateSynth', JSON.stringify(this.data))
   }
 
   triggerInstrument (i, note) {
+    const instrument = this.props.session.instrument
+    const solo = this.props.session.solo
+    if (solo && instrument !== i.inst) return
+
     const time = `${beatsPerMeasure}n`
 
     switch (i.inst) {
@@ -262,6 +263,15 @@ class Sequencer extends Component {
     } else {
       Tone.Transport.start()
     }
+  }
+
+  onSetBpm (val) {
+    this.props.onSetBpm(val)
+    Tone.Transport.bpm.value = val
+
+    if (!this.key) return
+    const metaRef = firebase.database().ref(`sessions/${this.key}/meta`)
+    metaRef.set({ bpm: val })
   }
 
   onSetInstrument () {

@@ -1,7 +1,9 @@
 import { connect } from 'react-redux'
 import {
+  setBpm,
   setInstrument,
-  setPaused
+  setPaused,
+  setSolo
 } from '../actions'
 import Controls from '../components/Controls'
 
@@ -13,11 +15,17 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    onPlayPause: (bool) => {
+      dispatch(setPaused(bool))
+    },
+    onSetBpm: (num) => {
+      dispatch(setBpm(num))
+    },
     onSetInstrument: (val) => {
       dispatch(setInstrument(val))
     },
-    onPlayPause: (bool) => {
-      dispatch(setPaused(bool))
+    onSetSolo: (bool) => {
+      dispatch(setSolo(bool))
     }
   }
 }
