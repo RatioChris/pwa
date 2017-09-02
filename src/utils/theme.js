@@ -1,14 +1,6 @@
 import createMuiTheme from 'material-ui/styles/theme'
 
 const theme = createMuiTheme({
-  TextField: {
-    focused: {
-      color: '#ff0000',
-      '& $label': {
-        color: '#00ff00',
-      }
-    }
-  },
   "typography": {
     "fontFamily": "\"Raleway\", \"Helvetica\", \"Arial\", sans-serif",
     "fontSize": 14,

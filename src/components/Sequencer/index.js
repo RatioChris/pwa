@@ -58,7 +58,7 @@ class Sequencer extends Component {
 
     if (this.props.session.key !== nextProps.session.key) {
       this.key = nextProps.session.key
-      this.initData()
+      this.setData()
       this.renderMatrix()
     }
 
@@ -73,7 +73,7 @@ class Sequencer extends Component {
 
   init () {
     this.initTone()
-    this.initData()
+    this.setData()
     this.initNexus()
     this.initTransport()
   }
@@ -92,26 +92,25 @@ class Sequencer extends Component {
   }
 
   initTone () {
-
     const bpm = this.props.session.bpm || 60
     this.onSetBpm(bpm)
     Tone.Transport.loopEnd = `${measures}m`
     Tone.Transport.loop = true
-    // Tone.Transport.start(4)
   }
 
-  initData () {
+  setData () {
     this.dataRef = firebase.database().ref(`sessions/${this.key}/data`)
     this.dataRef.on('value', (snapshot) => {
       const items = snapshot.val()
-      console.warn('initData', items)
+      // console.warn('setData', items)
       this.data = items || {}
+      this.renderMatrix()
     })
 
     this.bpmRef = firebase.database().ref(`sessions/${this.key}/meta/bpm`)
     this.bpmRef.on('value', (snapshot) => {
       const bpm = snapshot.val()
-      console.warn('initData bpm', bpm)
+      // console.warn('setData bpm', bpm)
       if (bpm) this.onSetBpm(bpm)
     })
   }
@@ -267,7 +266,8 @@ class Sequencer extends Component {
 
   onSetBpm (val) {
     this.props.onSetBpm(val)
-    Tone.Transport.bpm.value = val
+    // Tone.Transport.bpm.value = val
+    Tone.Transport.bpm.rampTo(val, 2)
 
     if (!this.key) return
     const metaRef = firebase.database().ref(`sessions/${this.key}/meta`)

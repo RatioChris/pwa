@@ -101,7 +101,7 @@ const autoWah = new Tone.AutoWah({
 const delay = new Tone.PingPongDelay({
   delayTime: 0.25,
   feedback: 0.4,
-  wet: 0.08
+  wet: 0.07
 })
 
 /* const distortion = new Tone.Distortion({
