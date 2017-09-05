@@ -105,7 +105,7 @@ Then run the `firebase init` command from your project’s root. You need to cho
     ✔  Firebase initialization complete!
 ```
 
-Now, after you create a production build with `npm run build`, you can deploy it by running `firebase deploy`.
+Now, after you create a production build with `yarn build`, you can deploy it by running `firebase deploy`.
 
 ```sh
     === Deploying to 'example-app-fd690'...
