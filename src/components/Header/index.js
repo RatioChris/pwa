@@ -14,7 +14,7 @@ class Header extends Component {
     super(props)
 
     this.state = {
-      networkConnection: true
+      networkConnection: false
     }
 
     this.onToggleDrawer = this.onToggleDrawer.bind(this)
@@ -33,7 +33,6 @@ class Header extends Component {
     const connectedRef = firebase.database().ref('.info/connected')
     connectedRef.on('value', (snap) => {
       this.setState({ networkConnection: snap.val() })
-      console.warn(this.state.networkConnection, snap.val())
     })
   }
 

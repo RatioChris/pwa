@@ -62,7 +62,7 @@ class Menu extends Component {
           type='persistent'
           open={this.props.ui.drawer}
           onRequestClose={this.onToggleDrawer}
-          // onClick={this.onToggleDrawer}
+          onClick={this.onToggleDrawer}
         >
           <div className='drawer--button'>
             <IconButton onClick={this.onToggleDrawer}>
