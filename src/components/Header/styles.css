@@ -10,3 +10,7 @@
   width: 56px;
   height: 56px;
 }
+
+.header--logo.disconnected {
+  filter: hue-rotate(310deg) saturate(200%);
+}

@@ -1,4 +1,6 @@
 import React, { Component } from 'react'
+import firebase from '../../utils/firebase.js'
+import classNames from 'classnames'
 import AppBar from 'material-ui/AppBar'
 import IconButton from 'material-ui/IconButton'
 import MenuIcon from 'material-ui-icons/Menu'
@@ -11,7 +13,15 @@ class Header extends Component {
   constructor (props) {
     super(props)
 
+    this.state = {
+      networkConnection: true
+    }
+
     this.onToggleDrawer = this.onToggleDrawer.bind(this)
+  }
+
+  componentDidMount () {
+    this.connectionState()
   }
 
   onToggleDrawer () {
@@ -19,7 +29,20 @@ class Header extends Component {
     this.props.onToggleDrawer(!drawer)
   }
 
+  connectionState () {
+    const connectedRef = firebase.database().ref('.info/connected')
+    connectedRef.on('value', (snap) => {
+      this.setState({ networkConnection: snap.val() })
+      console.warn(this.state.networkConnection, snap.val())
+    })
+  }
+
   render () {
+    const cx = classNames(
+      'header--logo',
+      { 'disconnected': !this.state.networkConnection }
+    )
+
     return (
       <AppBar position='static' color='primary' className='header'>
         <Toolbar>
@@ -35,7 +58,7 @@ class Header extends Component {
             PWA
           </Typography>
 
-          <img src={logo} alt='' className='header--logo' />
+          <img src={logo} alt='' className={cx} />
         </Toolbar>
       </AppBar>
     )
