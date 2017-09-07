@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
 import {
   setBpm,
-  setSession
+  setSessionKey
 } from '../actions'
 import Sequencer from '../components/Sequencer'
 
@@ -16,8 +16,8 @@ const mapDispatchToProps = (dispatch) => {
     onSetBpm: (num) => {
       dispatch(setBpm(num))
     },
-    onSetSession: (val) => {
-      dispatch(setSession(val))
+    onSetSessionKey: (val) => {
+      dispatch(setSessionKey(val))
     }
   }
 }

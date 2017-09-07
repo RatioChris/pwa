@@ -39,7 +39,7 @@ export const setPaused = (bool) => {
   }
 }
 
-export const setSession = (val) => {
+export const setSessionKey = (val) => {
   return {
     type: SESSION_KEY,
     val
@@ -80,9 +80,9 @@ export const onSetPaused = (bool) => {
   }
 }
 
-export const onSetSession = (val) => {
+export const onSetSessionKey = (val) => {
   return (dispatch, getState, container) => {
-    return dispatch(setSession(val))
+    return dispatch(setSessionKey(val))
   }
 }
 

@@ -1,6 +1,6 @@
-import React, { Component } from 'react'
-import './styles.css'
+/* global localStorage */
 
+import React, { Component } from 'react'
 import AppBar from 'material-ui/AppBar'
 import Button from 'material-ui/Button'
 import { FormGroup, FormControlLabel } from 'material-ui/Form'
@@ -10,6 +10,7 @@ import TextField from 'material-ui/TextField'
 import Toolbar from 'material-ui/Toolbar'
 import PauseIcon from 'material-ui-icons/Pause'
 import PlayIcon from 'material-ui-icons/PlayArrow'
+import './styles.css'
 
 class Controls extends Component {
   constructor (props) {
@@ -35,6 +36,7 @@ class Controls extends Component {
   onSetInstrument (event) {
     const instrument = event.currentTarget.value
     this.props.onSetInstrument(instrument)
+    localStorage.setItem('instrument', instrument)
   }
 
   onSetSolo (event) {

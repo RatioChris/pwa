@@ -1,3 +1,5 @@
+/* global localStorage */
+
 import React, { Component } from 'react'
 import firebase from '../../utils/firebase.js'
 import ChevronLeftIcon from 'material-ui-icons/ChevronLeft'
@@ -16,7 +18,7 @@ class Menu extends Component {
     this.sessionRef = {}
     this.sessions = []
 
-    this.onSetSession = this.onSetSession.bind(this)
+    this.onSetSessionKey = this.onSetSessionKey.bind(this)
     this.onToggleDrawer = this.onToggleDrawer.bind(this)
   }
 
@@ -33,13 +35,8 @@ class Menu extends Component {
   initData () {
     this.sessionRef = firebase.database().ref(`sessions`)
 
-    // let x = firebase.database().ref(`sessions`)
-    // x.push({data: ''})
-
     this.sessionRef.on('value', (snapshot) => {
       const items = snapshot.val()
-      // this.sessions = items || {}
-
       this.sessions = []
       for (var key in items) {
         this.sessions.push(key)
@@ -47,8 +44,10 @@ class Menu extends Component {
     })
   }
 
-  onSetSession (e) {
-    this.props.onSetSession(e.textContent)
+  onSetSessionKey (e) {
+    const key = e.textContent
+    this.props.onSetSessionKey(key)
+    localStorage.setItem('sessionKey', key)
   }
 
   onToggleDrawer () {
@@ -84,7 +83,7 @@ class Menu extends Component {
               return (
                 <ListItem button
                   key={`menu--${index}`}
-                  onClick={(e) => this.onSetSession(e.target)}
+                  onClick={(e) => this.onSetSessionKey(e.target)}
                 >
                   <ListItemIcon>
                     {icon}

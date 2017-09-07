@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
 import {
   setDrawer,
-  setSession
+  setSessionKey
 } from '../actions'
 import Drawer from '../components/Drawer'
 
@@ -17,8 +17,8 @@ const mapDispatchToProps = (dispatch) => {
     onToggleDrawer: (bool) => {
       dispatch(setDrawer(bool))
     },
-    onSetSession: (val) => {
-      dispatch(setSession(val))
+    onSetSessionKey: (val) => {
+      dispatch(setSessionKey(val))
     }
   }
 }

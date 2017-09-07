@@ -50,6 +50,9 @@ export default class Instruments {
   getHighHatOpen () {
     return highHatOpen()
   }
+  getCowbell () {
+    return cowbell()
+  }
 }
 
 const _setNotes = (qty) => {
@@ -165,7 +168,17 @@ const guitar = () => {
     envelope: {
       attack: 0.01,
       release: 3
-    }
+    },
+    filterEnvelope: {
+      attack: 0.06,
+      decay: 0.2,
+      sustain: 0.5,
+      release: 2,
+      baseFrequency: 200,
+      octaves: 7,
+      exponent: 2
+    },
+    volume: -4
   })
 
   return instrument
@@ -220,5 +233,11 @@ const highHatOpen = () => {
     envelope: {
       release: 2
     }
+  }).toMaster()
+}
+
+const cowbell = () => {
+  return new Tone.Sampler({
+    url: './samples/cowbell.mp3'
   }).toMaster()
 }

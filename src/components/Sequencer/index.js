@@ -25,12 +25,13 @@ let kick = null
 let snare = null
 let highHat = null
 let highHatOpen = null
+let cowbell = null
 
 class Sequencer extends Component {
   constructor (props) {
     super(props)
 
-    this.key = null
+    this.key = this.props.session.key || null
     this.data = {}
     this.dataRef = {}
   }
@@ -42,6 +43,7 @@ class Sequencer extends Component {
     snare = instruments.getSnare()
     highHat = instruments.getHighHat()
     highHatOpen = instruments.getHighHatOpen()
+    cowbell = instruments.getCowbell()
 
     this.init()
 
@@ -127,7 +129,7 @@ class Sequencer extends Component {
     sequencer = new window.Nexus.Sequencer('#sequencer', {
       'size': [window.innerWidth, window.innerHeight - 170],
       'mode': 'toggle',
-      'rows': instrument === 'drums' ? 4 : scaleLength,
+      'rows': instrument === 'drums' ? 5 : scaleLength,
       'columns': measures * beatsPerMeasure
     })
 
@@ -203,7 +205,7 @@ class Sequencer extends Component {
           const sessionRef = sessionsRef.push({data: ''})
           this.key = sessionRef.key
           this.dataRef = firebase.database().ref(`sessions/${this.key}/data`)
-          this.props.onSetSession(this.key)
+          this.props.onSetSessionKey(this.key)
         }
 
         const noteRef = this.dataRef.push(i)
@@ -250,6 +252,7 @@ class Sequencer extends Component {
         if (i.row === 1) snare.triggerAttackRelease(0, time)
         if (i.row === 2) highHat.triggerAttackRelease(0, time)
         if (i.row === 3) highHatOpen.triggerAttackRelease(0, time)
+        if (i.row === 4) cowbell.triggerAttackRelease(0, time)
         break
       default:
         break

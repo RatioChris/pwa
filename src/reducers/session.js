@@ -1,3 +1,5 @@
+/* global localStorage */
+
 import {
   BPM,
   INSTRUMENT,
@@ -8,8 +10,8 @@ import {
 
 const session = (state = {
   bpm: 60,
-  instrument: 'guitar',
-  key: null,
+  instrument: localStorage.getItem('instrument') || 'guitar',
+  key: localStorage.getItem('sessionKey') || null,
   paused: true,
   solo: false
 }, action) => {
