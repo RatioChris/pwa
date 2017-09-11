@@ -270,7 +270,7 @@ class Sequencer extends Component {
   onSetBpm (val) {
     this.props.onSetBpm(val)
     // Tone.Transport.bpm.value = val
-    Tone.Transport.bpm.rampTo(val, 2)
+    Tone.Transport.bpm.rampTo(val, 1)
 
     if (!this.key) return
     const metaRef = firebase.database().ref(`sessions/${this.key}/meta`)
