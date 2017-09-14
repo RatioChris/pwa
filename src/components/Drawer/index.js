@@ -2,11 +2,13 @@
 
 import React, { Component } from 'react'
 import firebase from '../../utils/firebase.js'
+import Button from 'material-ui/Button'
 import ChevronLeftIcon from 'material-ui-icons/ChevronLeft'
 import Divider from 'material-ui/Divider'
 import Drawer from 'material-ui/Drawer'
 import IconButton from 'material-ui/IconButton'
 import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List'
+import Lock from 'material-ui-icons/Lock'
 import VolumeMute from 'material-ui-icons/VolumeMute'
 import VolumeUp from 'material-ui-icons/VolumeUp'
 import './styles.css'
@@ -18,6 +20,7 @@ class Menu extends Component {
     this.sessionRef = {}
     this.sessions = []
 
+    this.onCreateSession = this.onCreateSession.bind(this)
     this.onSetSessionKey = this.onSetSessionKey.bind(this)
     this.onToggleDrawer = this.onToggleDrawer.bind(this)
   }
@@ -39,13 +42,23 @@ class Menu extends Component {
       const items = snapshot.val()
       this.sessions = []
       for (var key in items) {
-        this.sessions.push(key)
+        let locked = (items[key].meta && items[key].meta.locked) || false
+
+        this.sessions.push({
+          key: key,
+          locked: locked
+        })
       }
     })
   }
 
-  onSetSessionKey (e) {
-    const key = e.textContent
+  onCreateSession () {
+    const sessionsRef = firebase.database().ref(`sessions`)
+    const sessionRef = sessionsRef.push({data: ''})
+    this.onSetSessionKey(sessionRef.key)
+  }
+
+  onSetSessionKey (key) {
     this.props.onSetSessionKey(key)
     localStorage.setItem('sessionKey', key)
   }
@@ -74,7 +87,7 @@ class Menu extends Component {
           <List>
             {this.sessions.map((item, index) => {
               let icon = null
-              if (item === this.props.session.key) {
+              if (item.key === this.props.session.key) {
                 icon = <VolumeUp />
               } else {
                 icon = <VolumeMute />
@@ -83,19 +96,29 @@ class Menu extends Component {
               return (
                 <ListItem button
                   key={`menu--${index}`}
-                  onClick={(e) => this.onSetSessionKey(e.target)}
+                  onClick={(e) => this.onSetSessionKey(e.target.textContent)}
                 >
                   <ListItemIcon>
                     {icon}
                   </ListItemIcon>
 
                   <ListItemText inset
-                    primary={item}
+                    primary={item.key}
                   />
+
+                  { item.locked &&
+                    <ListItemIcon>
+                      <Lock />
+                    </ListItemIcon>
+                  }
                 </ListItem>
               )
             }, this)}
           </List>
+
+          <Button raised color='primary' onClick={this.onCreateSession}>
+            Create New Session
+          </Button>
         </Drawer>
       </div>
     )

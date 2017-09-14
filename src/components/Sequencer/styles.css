@@ -3,6 +3,11 @@
   margin: 20px 0 85px;
 }
 
+#sequencer.locked {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
 #sequencer span:nth-child(4n) {
   border-right: 1px solid #ccc;
 }

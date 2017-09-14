@@ -4,6 +4,7 @@
 export const BPM = 'BPM'
 export const DRAWER = 'DRAWER'
 export const INSTRUMENT = 'INSTRUMENT'
+export const LOCKED = 'LOCKED'
 export const PAUSED = 'PAUSED'
 export const SESSION_KEY = 'SESSION_KEY'
 export const SOLO = 'SOLO'
@@ -29,6 +30,13 @@ export const setInstrument = (val) => {
   return {
     type: INSTRUMENT,
     val
+  }
+}
+
+export const setLocked = (bool) => {
+  return {
+    type: LOCKED,
+    bool
   }
 }
 
@@ -71,6 +79,12 @@ export const onSetDrawer = (bool) => {
 export const onSetInstrument = (val) => {
   return (dispatch, getState, container) => {
     return dispatch(setInstrument(val))
+  }
+}
+
+export const onSetLocked = (bool) => {
+  return (dispatch, getState, container) => {
+    return dispatch(setLocked(bool))
   }
 }
 

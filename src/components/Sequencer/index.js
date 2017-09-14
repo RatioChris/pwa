@@ -64,6 +64,10 @@ class Sequencer extends Component {
       this.renderMatrix()
     }
 
+    if (this.props.session.locked !== nextProps.session.locked) {
+      this.onSetLocked(nextProps.session.locked)
+    }
+
     if (this.props.session.paused !== nextProps.session.paused) {
       this.onPlayPause(nextProps.session.paused)
     }
@@ -94,8 +98,6 @@ class Sequencer extends Component {
   }
 
   initTone () {
-    const bpm = this.props.session.bpm || 60
-    this.onSetBpm(bpm)
     Tone.Transport.loopEnd = `${measures}m`
     Tone.Transport.loop = true
   }
@@ -104,17 +106,21 @@ class Sequencer extends Component {
     this.dataRef = firebase.database().ref(`sessions/${this.key}/data`)
     this.dataRef.on('value', (snapshot) => {
       const items = snapshot.val()
-      // console.warn('setData', items)
       this.data = items || {}
       this.renderMatrix()
     })
 
-    this.bpmRef = firebase.database().ref(`sessions/${this.key}/meta/bpm`)
-    this.bpmRef.on('value', (snapshot) => {
-      const bpm = snapshot.val()
-      // console.warn('setData bpm', bpm)
-      if (bpm) this.onSetBpm(bpm)
-    })
+    firebase.database().ref(`sessions/${this.key}/meta/bpm`)
+      .on('value', (snapshot) => {
+        const bpm = snapshot.val() || this.props.session.bpm
+        this.onSetBpm(bpm)
+      })
+
+    firebase.database().ref(`sessions/${this.key}/meta/locked`)
+      .on('value', (snapshot) => {
+        const locked = snapshot.val()
+        this.onSetLocked(locked)
+      })
   }
 
   initNexus () {
@@ -143,12 +149,6 @@ class Sequencer extends Component {
 
   initTransport () {
     Tone.Transport.scheduleRepeat((time) => {
-      /* this.data.forEach((i) => {
-        const note = instruments.getNoteFromMatrix(i)
-        Tone.Transport.scheduleOnce(() => {
-          this.triggerInstrument(i, note.tone)
-        }, note.time)
-      }) */
       for (var key in this.data) {
         let i = this.data[key]
         const note = instruments.getNoteFromMatrix(i)
@@ -273,8 +273,16 @@ class Sequencer extends Component {
     Tone.Transport.bpm.rampTo(val, 1)
 
     if (!this.key) return
-    const metaRef = firebase.database().ref(`sessions/${this.key}/meta`)
-    metaRef.set({ bpm: val })
+    const metaRef = firebase.database().ref(`sessions/${this.key}/meta/bpm`)
+    metaRef.set(val)
+  }
+
+  onSetLocked (bool) {
+    this.props.onSetLocked(bool)
+
+    if (!this.key) return
+    const metaRef = firebase.database().ref(`sessions/${this.key}/meta/locked`)
+    metaRef.set(bool)
   }
 
   onSetInstrument () {
@@ -284,8 +292,13 @@ class Sequencer extends Component {
   }
 
   render () {
+    const locked = this.props.session.locked
+
     return (
-      <div id='sequencer' />
+      <div
+        id='sequencer'
+        className={`${locked ? 'locked' : 'unlocked'}`}
+      />
     )
   }
 }
