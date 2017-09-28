@@ -37,7 +37,7 @@ Logging is disabled by default. To enable logging, set `localStorage.debug = tru
 
 ### Using HTTPS in Development
 
-To do this, set the `HTTPS` environment variable to `true`, then start the dev server as usual with `npm start`:
+To do this, set the `HTTPS` environment variable to `true`, then start the dev server as usual with `yarn start`:
 
 ```
 env HTTPS=true yarn start

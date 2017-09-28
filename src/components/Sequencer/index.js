@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import Tone from 'tone'
 import firebase from '../../utils/firebase.js'
 import { find } from 'underscore'
+import classNames from 'classnames'
 import Instruments from '../../utils/Instruments'
 import './styles.css'
 
@@ -14,9 +15,9 @@ const color2_lite = purple[50]
 const color3 = green[500]
 const color3_lite = green[50]
 
-let measures = 2
-let beatsPerMeasure = 16
-let scaleLength = 16
+const measures = 2
+const beatsPerMeasure = 16
+const scaleLength = 16
 let sequencer
 let instruments = new Instruments(measures, beatsPerMeasure)
 let bass = null
@@ -292,12 +293,14 @@ class Sequencer extends Component {
   }
 
   render () {
-    const locked = this.props.session.locked
+    const cx = classNames(
+      { 'locked': this.props.session.locked }
+    )
 
     return (
       <div
         id='sequencer'
-        className={`${locked ? 'locked' : 'unlocked'}`}
+        className={cx}
       />
     )
   }
