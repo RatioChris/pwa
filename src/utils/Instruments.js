@@ -89,10 +89,10 @@ const _setBeats = (measures, beatsPerMeasure) => {
 }) */
 
 const autoWah = new Tone.AutoWah({
-  baseFrequency: 120,
+  baseFrequency: 360,
   octaves: 0,
   Q: 0,
-  gain: 25
+  gain: 10
 })
 
 // const chorus = new Tone.Chorus()

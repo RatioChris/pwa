@@ -17,7 +17,7 @@ const color3_lite = green[50]
 
 const measures = 2
 const beatsPerMeasure = 16
-const scaleLength = 16
+const scaleLength = 21
 let sequencer
 let instruments = new Instruments(measures, beatsPerMeasure)
 let bass = null
@@ -221,10 +221,10 @@ class Sequencer extends Component {
 
       for (var key in data) {
         let item = data[key]
-        console.log(item)
-        if (item.row === i.row && item.column === i.column && item.inst === i.inst) {
-          console.warn(key, item)
+        // console.log(item)ß
 
+        if (item.row === i.row && item.column === i.column && item.inst === i.inst) {
+          // console.warn(key, item)
           this.dataRef.child(key).remove()
           delete this.data[key]
           break

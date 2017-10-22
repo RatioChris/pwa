@@ -28,7 +28,7 @@ class Controls extends Component {
   }
 
   onSetBpm (val) {
-    if (val < 20) val = 20
+    if (val < 1) val = 1
     if (val > 200) val = 200
     this.props.onSetBpm(val)
   }
@@ -114,6 +114,7 @@ class Controls extends Component {
               aria-label='beats per minute'
               type='number'
               value={session.bpm}
+              disabled={session.locked}
               onChange={e => this.onSetBpm(e.target.value)}
               margin='none'
             />
